@@ -1,0 +1,481 @@
+
+%% IEEEexample.bib 
+%% V1.10 
+%% 2002/09/27
+%% Copyright (c) 2002 by Michael Shell
+%% mshell(at)ece.gatech.edu
+%% See support website below for current contact information.
+%% 
+%% NOTE: This text file uses MS Windows line feed conventions. When (human)
+%% reading this file on other platforms, you may have to use a text
+%% editor that can handle lines terminated by the MS Windows line feed
+%% characters (0x0D 0x0A).
+%% 
+%% This is an example BibTeX database for the official IEEEtran.bst
+%% BibTeX style file.
+%% 
+%% Some entries call strings that are defined in the IEEEabrv.bib file.
+%% Therefore, IEEEabrv.bib should be loaded prior to this file. 
+%% Usage: 
+%% 
+%% \bibliographystyle{./IEEEtran} % use IEEEtran.bst style
+%% \bibliography{./IEEEabrv,./IEEEexample}
+%% 
+%% 
+%% Support sites:
+%% http://www.ctan.org/tex-archive/macros/latex/contrib/supported/IEEEtran/ 
+%% and/or
+%% http://www.ieee.org
+%%**********************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE!
+%% User assumes all risk.
+%% In no event shall IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% This code is distributed under the Perl Artistic License 
+%% ( http://language.perl.com/misc/Artistic.html ) 
+%% and may be freely used, distributed and modified - subject to the
+%% constraints therein.
+%% Retain all contribution notices, credits and disclaimers.
+%% 
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%**********************************************************************
+
+
+% Note that, because the example references were taken from actual IEEE
+% publications, these examples do not always contain the full amount
+% of information that may be desirable (for use with other BibTeX styles).
+% In particular, full names (not abbreviated with initials) should be
+% entered whenever possible as some (non-IEEE) bibliography styles use
+% full names. IEEEtran.bst will automatically abbreviate when it
+% encounters full names.
+ 
+ 
+% techniques
+@article{tancik2020fourierfeatures,
+  title={Fourier features let networks learn high frequency functions in low dimensional domains},
+  author={Tancik, Matthew and Srinivasan, Pratul and Mildenhall, Ben and Fridovich-Keil, Sara and Raghavan, Nithin and Singhal, Utkarsh and Ramamoorthi, Ravi and Barron, Jonathan and Ng, Ren},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={7537--7547},
+  year={2020}
+}
+
+
+
+% for surrogate gradient
+@article{Zenke2021surrogate,
+  title={The remarkable robustness of surrogate gradient learning for instilling complex function in spiking neural networks},
+  author={Zenke, Friedemann and Vogels, Tim P},
+  journal={Neural Computation},
+  volume={33},
+  number={4},
+  pages={899--925},
+  year={2021},
+  publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
+}
+
+
+% RGB nerfs
+% -- nerf with pose optimisation
+@inproceedings{lin2021barf,
+  title={Barf: Bundle-adjusting neural radiance fields},
+  author={Lin, Chen-Hsuan and Ma, Wei-Chiu and Torralba, Antonio and Lucey, Simon},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={5741--5751},
+  year={2021}
+}
+@article{wang2022nerfmm,
+  title={NeRF--: Neural radiance fields without known camera parameters},
+  author={Wang, Zirui and Wu, Shangzhe and Xie, Weidi and Chen, Min and Prisacariu, Victor Adrian},
+  year={2021}
+}
+@inproceedings{bian2023nopenerf,
+  title={Nope-nerf: Optimising neural radiance field with no pose prior},
+  author={Bian, Wenjing and Wang, Zirui and Li, Kejie and Bian, Jia-Wang and Prisacariu, Victor Adrian},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={4160--4169},
+  year={2023}
+}
+@inproceedings{wang2023badnerf,
+  title={Bad-nerf: Bundle adjusted deblur neural radiance fields},
+  author={Wang, Peng and Zhao, Lingzhe and Ma, Ruijie and Liu, Peidong},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={4170--4179},
+  year={2023}
+}
+
+% -- nerf with volume sampling
+@inproceedings{barron2022mipnerf360,
+  title={Mip-nerf 360: Unbounded anti-aliased neural radiance fields},
+  author={Barron, Jonathan T and Mildenhall, Ben and Verbin, Dor and Srinivasan, Pratul P and Hedman, Peter},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={5470--5479},
+  year={2022}
+}
+@inproceedings{barron2023zipnerf,
+  title={Zip-nerf: Anti-aliased grid-based neural radiance fields},
+  author={Barron, Jonathan T and Mildenhall, Ben and Verbin, Dor and Srinivasan, Pratul P and Hedman, Peter},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={19697--19705},
+  year={2023}
+}
+@inproceedings{barron2021mipnerf,
+  title={Mip-nerf: A multiscale representation for anti-aliasing neural radiance fields},
+  author={Barron, Jonathan T and Mildenhall, Ben and Tancik, Matthew and Hedman, Peter and Martin-Brualla, Ricardo and Srinivasan, Pratul P},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={5855--5864},
+  year={2021}
+}
+@inproceedings{verbin2024nerfcasting,
+  title={Nerf-casting: Improved view-dependent appearance with consistent reflections},
+  author={Verbin, Dor and Srinivasan, Pratul P and Hedman, Peter and Mildenhall, Ben and Attal, Benjamin and Szeliski, Richard and Barron, Jonathan T},
+  booktitle={SIGGRAPH Asia 2024 Conference Papers},
+  pages={1--10},
+  year={2024}
+}
+
+% -- other nerfs
+@inproceedings{martinbrualla2021nerfinwild,
+  title={Nerf in the wild: Neural radiance fields for unconstrained photo collections},
+  author={Martin-Brualla, Ricardo and Radwan, Noha and Sajjadi, Mehdi SM and Barron, Jonathan T and Dosovitskiy, Alexey and Duckworth, Daniel},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={7210--7219},
+  year={2021}
+}
+@inproceedings{deng2024dsnerf,
+  title={Depth-supervised nerf: Fewer views and faster training for free},
+  author={Deng, Kangle and Liu, Andrew and Zhu, Jun-Yan and Ramanan, Deva},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={12882--12891},
+  year={2022}
+}
+@article{mildenhall2020nerfOG,
+  title={Nerf: Representing scenes as neural radiance fields for view synthesis},
+  author={Mildenhall, Ben and Srinivasan, Pratul P and Tancik, Matthew and Barron, Jonathan T and Ramamoorthi, Ravi and Ng, Ren},
+  journal={Communications of the ACM},
+  volume={65},
+  number={1},
+  pages={99--106},
+  year={2021},
+  publisher={ACM New York, NY, USA}
+}
+@inproceedings{chen2023l2gnerf,
+  title={Local-to-global registration for bundle-adjusting neural radiance fields},
+  author={Chen, Yue and Chen, Xingyu and Wang, Xuan and Zhang, Qi and Guo, Yu and Shan, Ying and Wang, Fei},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={8264--8273},
+  year={2023}
+}
+
+%-- LiDAR NeRFs
+@inproceedings{Zhang2014LOAM,
+  title={LOAM: Lidar odometry and mapping in real-time.},
+  author={Zhang, Ji and Singh, Sanjiv and others},
+  booktitle={Robotics: Science and Systems},
+  volume={2},
+  number={9},
+  pages={1--9},
+  year={2014},
+  organization={Berkeley, CA}
+}
+@inproceedings{deng2023nerfloam,
+  title={NeRF-LOAM: Neural Implicit Representation for Large-Scale Incremental LiDAR Odometry and Mapping},
+  author={Deng, Junyuan and Wu, Qi and Chen, Xieyuanli and Xia, Songpengcheng and Sun, Zhen and Liu, Guoqing and Yu, Wenxian and Pei, Ling},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={8218--8227},
+  year={2023}
+}
+@article{isaacson2024lonerlidar,
+  title={Loner: LiDAR Only Neural Representations for Real-Time SLAM},
+  author={Isaacson, Seth and Kung, Pou-Chun and Ramanagopal, Mani and Vasudevan, Ram and Skinner, Katherine A},
+  journal={IEEE Robotics and Automation Letters},
+  volume={8},
+  number={12},
+  pages={8042--8049},
+  year={2023},
+  publisher={IEEE}
+}
+@article{xue2024geonlf,
+  title={GeoNLF: Geometry guided Pose-Free Neural LiDAR Fields},
+  author={Xue, Weiyi and Zheng, Zehan and Lu, Fan and Wei, Haiyun and Chen, Guang and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={73672--73692},
+  year={2024}
+}
+@inproceedings{zheng2024lidar4D,
+  title={Lidar4d: Dynamic neural fields for novel space-time view lidar synthesis},
+  author={Zheng, Zehan and Lu, Fan and Xue, Weiyi and Chen, Guang and Jiang, Changjun},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={5145--5154},
+  year={2024}
+}
+@article{jiang2025gslidar,
+  title={Gs-lidar: Generating realistic lidar point clouds with panoramic gaussian splatting},
+  author={Jiang, Junzhe and Gu, Chun and Chen, Yurui and Zhang, Li},
+  journal={arXiv preprint arXiv:2501.13971},
+  year={2025}
+}
+
+
+% General point cloud registration
+@inproceedings{besl1992icp,
+  title={Method for registration of 3-D shapes},
+  author={Besl, Paul J and McKay, Neil D},
+  booktitle={Sensor fusion IV: control paradigms and data structures},
+  volume={1611},
+  pages={586--606},
+  year={1992},
+  organization={Spie}
+}
+@article{CHEN1992point2planeicp,
+  title={Object modelling by registration of multiple range images},
+  author={Chen, Yang and Medioni, G{\'e}rard},
+  journal={Image and Vision Computing},
+  volume={10},
+  number={3},
+  pages={145--155},
+  year={1992},
+  publisher={Elsevier}
+}
+
+
+% comparison algorithms
+% -- point cloud registration
+@article{qin2023geotrans,
+  title={Geotransformer: Fast and robust point cloud registration with geometric transformer},
+  author={Qin, Zheng and Yu, Hao and Wang, Changjian and Guo, Yulan and Peng, Yuxing and Ilic, Slobodan and Hu, Dewen and Xu, Kai},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume={45},
+  number={8},
+  pages={9806--9821},
+  year={2023},
+  publisher={IEEE}
+}
+@inproceedings{wang2023sghr,
+  title={Robust multiview point cloud registration with reliable pose graph initialization and history reweighting},
+  author={Wang, Haiping and Liu, Yuan and Dong, Zhen and Guo, Yulan and Liu, Yu-Shen and Wang, Wenping and Yang, Bisheng},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={9506--9515},
+  year={2023}
+}
+@inproceedings{lu2021hregnet,
+  title={Hregnet: A hierarchical network for large-scale outdoor lidar point cloud registration},
+  author={Lu, Fan and Chen, Guang and Liu, Yinlong and Zhang, Lijun and Qu, Sanqing and Liu, Shu and Gu, Rongqi},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={16014--16023},
+  year={2021}
+}
+@article{liu2022HBA,
+  title={Large-scale LiDAR consistent mapping using hierarchical LiDAR bundle adjustment},
+  author={Liu, Xiyuan and Liu, Zheng and Kong, Fanze and Zhang, Fu},
+  journal={IEEE Robotics and Automation Letters},
+  volume={8},
+  number={3},
+  pages={1523--1530},
+  year={2023},
+  publisher={IEEE}
+}
+@article{liu2021balm,
+  title={Balm: Bundle adjustment for lidar mapping},
+  author={Liu, Zheng and Zhang, Fu},
+  journal={IEEE Robotics and Automation Letters},
+  volume={6},
+  number={2},
+  pages={3184--3191},
+  year={2021},
+  publisher={IEEE}
+}
+
+% -- mapping
+@inproceedings{zhong20243dlidarmappingdynamic,
+  title={3d lidar mapping in dynamic environments using a 4d implicit neural representation},
+  author={Zhong, Xingguang and Pan, Yue and Stachniss, Cyrill and Behley, Jens},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={15417--15427},
+  year={2024}
+}
+@article{zhong2023shinemapping,
+  title={Shine-mapping: Large-scale 3d mapping using sparse hierarchical implicit neural representations},
+  author={Zhong, Xingguang and Pan, Yue and Behley, Jens and Stachniss, Cyrill},
+  journal={arXiv preprint arXiv:2210.02299},
+  year={2022}
+}
+@article{pan2024pinslam,
+  title={PIN-SLAM: LiDAR SLAM using a point-based implicit neural representation for achieving global map consistency},
+  author={Pan, Yue and Zhong, Xingguang and Wiesmann, Louis and Posewsky, Thorbj{\"o}rn and Behley, Jens and Stachniss, Cyrill},
+  journal={IEEE Transactions on Robotics},
+  volume={40},
+  pages={4045--4064},
+  year={2024},
+  publisher={IEEE}
+}
+@inproceedings{zhong20244dNDF,
+  title={3d lidar mapping in dynamic environments using a 4d implicit neural representation},
+  author={Zhong, Xingguang and Pan, Yue and Stachniss, Cyrill and Behley, Jens},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={15417--15427},
+  year={2024}
+}
+
+% Implementation details
+% -- input
+@article{xu2021fastlio2,
+  title={Fast-lio2: Fast direct lidar-inertial odometry},
+  author={Xu, Wei and Cai, Yixi and He, Dongjiao and Lin, Jiarong and Zhang, Fu},
+  journal={IEEE Transactions on Robotics},
+  volume={38},
+  number={4},
+  pages={2053--2073},
+  year={2022},
+  publisher={IEEE}
+}
+
+% -- tools
+@misc{paszke2019pytorch,
+      title={PyTorch: An Imperative Style, High-Performance Deep Learning Library}, 
+      author={Adam Paszke and Sam Gross and Francisco Massa and Adam Lerer and James Bradbury and Gregory Chanan and Trevor Killeen and Zeming Lin and Natalia Gimelshein and Luca Antiga and Alban Desmaison and Andreas Köpf and Edward Yang and Zach DeVito and Martin Raison and Alykhan Tejani and Sasank Chilamkurthy and Benoit Steiner and Lu Fang and Junjie Bai and Soumith Chintala},
+      year={2019},
+      eprint={1912.01703},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/1912.01703}, 
+}
+@article{kingma2017adam,
+  title={Adam: A method for stochastic optimization},
+  author={Kingma, Diederik P and Ba, Jimmy},
+  journal={arXiv preprint arXiv:1412.6980},
+  year={2014}
+}
+
+@misc{grupp2017evo,
+  title={evo: Python package for the evaluation of odometry and SLAM.},
+  author={Grupp, Michael},
+  howpublished={\url{https://github.com/MichaelGrupp/evo}},
+  year={2017}
+}
+@article{hu2025mapeval,
+  title={Mapeval: towards unified, robust and efficient slam map evaluation framework},
+  author={Hu, Xiangcheng and Wu, Jin and Jia, Mingkai and Yan, Hongyu and Jiang, Yi and Jiang, Binqian and Zhang, Wei and He, Wei and Tan, Ping},
+  journal={IEEE Robotics and Automation Letters},
+  year={2025},
+  publisher={IEEE}
+}
+
+% -- datasets
+@article{wei2024fusionportablev2,
+  title={Fusionportablev2: A unified multi-sensor dataset for generalized slam across diverse platforms and scalable environments},
+  author={Wei, Hexiang and Jiao, Jianhao and Hu, Xiangcheng and Yu, Jingwen and Xie, Xupeng and Wu, Jin and Zhu, Yilong and Liu, Yuxuan and Wang, Lujia and Liu, Ming},
+  journal={The International Journal of Robotics Research},
+  volume={44},
+  number={7},
+  pages={1093--1116},
+  year={2025},
+  publisher={SAGE Publications Sage UK: London, England}
+}
+@inproceedings{Ramezani2020newercollege,
+  title={The newer college dataset: Handheld lidar, inertial and vision with ground truth},
+  author={Ramezani, Milad and Wang, Yiduo and Camurri, Marco and Wisth, David and Mattamala, Matias and Fallon, Maurice},
+  booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  pages={4353--4360},
+  year={2020},
+  organization={IEEE}
+}
+@inproceedings{Geiger2012KITTI,
+  title={Are we ready for autonomous driving? the kitti vision benchmark suite},
+  author={Geiger, Andreas and Lenz, Philip and Urtasun, Raquel},
+  booktitle={2012 IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={3354--3361},
+  year={2012},
+  organization={IEEE}
+}
+@inproceedings{liu2023maicity,
+  title     = {MaiCity: A High-Fidelity Aerial-Ground Dataset for Vision-Based Localization and Mapping},
+  author    = {Liu, Ming and Xiong, Zikang and He, Yuhang and Wang, Zhe},
+  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year      = {2023}
+}
+
+@inproceedings{ruhnke2012highly,
+  title={Highly accurate {3D} surface models by sparse surface adjustment},
+  author={Ruhnke, Michael and K{\"u}mmerle, Rainer and Grisetti, Giorgio and Burgard, Wolfram},
+  booktitle={IEEE International Conference on Robotics and Automation},
+  pages={751--757},
+  year={2012},
+  organization={IEEE}
+}
+
+ 
+% An example of a IEEEtran control entry which can change some IEEEtran.bst
+% settings. An entry like this must be cited via \bstctlcite{} command
+% before the first real \cite{}. The same entry key cannot be called twice
+% (just like multiple \cite{} of the same entry key place only one entry
+% in the bibliography.)
+% The available control fields are:
+% 
+% CTLuse_article_number
+% "no" turns off the display of the number for articles.
+% "yes" enables
+%
+% CTLuse_paper
+% "no" turns off the display of the paper and type fields in inproceedings.
+% "yes" enables
+% 
+% CTLuse_forced_etal 
+% "no" turns off the forced use of "et al."
+% "yes" enables
+% 
+% CTLmax_names_forced_etal
+% The maximum number of names that can be present beyond which an "et al."
+% usage is forced. Be sure that CTLnames_show_etal (below)
+% is not greater than this value!
+% 
+% CTLnames_show_etal
+% The number of names that will be shown with a forced "et al.".
+% Must be less than or equal to CTLmax_names_forced_etal
+% 
+% CTLuse_alt_spacing 
+% "no" turns off the alternate interword spacing for entries with URLs.
+% "yes" enables
+% 
+% CTLalt_stretch_factor
+% If alternate interword spacing for entries with URLs is enabled, this is
+% the interword spacing stretch factor that will be used. For example, the
+% default "4" here means that the interword spacing in entries with URLs can
+% stretch to four times normal. Does not have to be an integer.
+% 
+% CTLdash_repeated_names
+% "no" turns off the "dashification" of repeated (i.e., identical to those
+% of the previous entry) names. IEEE normally does this.
+% "yes" enables
+% 
+% CTLname_format_string
+% The name format control string as explained in the BibTeX style hacking
+% guide.
+% IEEE style "{f.~}{vv~}{ll}{, jj}" is the default,
+% 
+% CTL_name_latex_cmd
+% A LaTeX command that each name will be fed to (e.g., "\textsc").
+% Leave empty if no special font is desired for the names.
+% The default is empty.
+% 
+% Those fields that are not to be changed can be left out or empty.
+@IEEEtranBSTCTL{IEEEexample:BSTcontrol,
+  CTLuse_article_number     = "yes",
+  CTLuse_paper              = "yes",
+  CTLuse_forced_etal        = "no",
+  CTLmax_names_forced_etal  = "10",
+  CTLnames_show_etal        = "1",
+  CTLuse_alt_spacing        = "yes",
+  CTLalt_stretch_factor     = "4",
+  CTLdash_repeated_names    = "yes",
+  CTLname_format_string     = "{f.~}{vv~}{ll}{, jj}",
+  CTLname_latex_cmd         = ""
+};

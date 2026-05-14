@@ -1,0 +1,465 @@
+
+% --- Raw map CD Result
+\begin{table*}
+	\caption{Evaluation of Raw Point Cloud Maps Using L1-Chamfer Distance [cm]}
+	\label{tab:pcd_plotting_cd-eval}
+	\centering
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{l@{\hspace{2pt}}*{10}{c@{\hspace{7pt}}}}
+		\toprule
+		& \multicolumn{6}{c@{\hspace{5pt}}}{Newer College} & \multicolumn{4}{c}{FusionPortable} \\
+		\cmidrule(lr){2-7} \cmidrule(lr){8-11}
+		Method & 
+			\makecell{cloister} &
+			\makecell{math\_easy} &
+			\makecell{math\_hard} &
+			\makecell{quad\_easy} &
+			\makecell{quad\_mid} &
+			\makecell{quad\_hard} &
+			\makecell{canteen\_day} &
+			\makecell{canteen\_night} &
+			\makecell{garden\_day} &
+			\makecell{garden\_night} \\
+		\midrule
+		FAST-LIO2~\cite{xu2021fastlio2} &
+			\underline{41.45} &      % cloister
+			34.74 &      % math_easy
+			37.70 &      % math_hard
+			27.85 &      % quad_easy
+			31.71 &      % quad_mid
+			\underline{37.74} &      % quad_hard
+			35.76 &      % canteen_day
+			35.03 &      % canteen_night
+			34.89 &      % garden_day
+			30.84 \\     % garden_night
+		HBA~\cite{liu2022HBA} &
+			48.45 &      % cloister
+			34.74 &      % math_easy
+			39.11 &      % math_hard
+			29.93 &      % quad_easy
+			38.54 &      % quad_mid
+			42.22 &      % quad_hard
+			35.67 &      % canteen_day
+			35.03 &      % canteen_night
+			36.11 &      % garden_day
+			31.61 \\     % garden_night
+		BALM~\cite{liu2021balm} &
+			\textbf{41.23} &      % cloister
+			\textbf{34.02} &      % math_easy
+			\underline{37.45} &      % math_hard
+			\underline{24.04} &      % quad_easy
+			\underline{27.00} &      % quad_mid
+			39.05 &      % quad_hard
+			\underline{34.58} &      % canteen_day
+			\underline{33.41} &      % canteen_night
+			\underline{30.70} &      % garden_day
+			\underline{27.23} \\     % garden_night
+		NeLD-BA (Ours) &
+			43.84 &    	 % cloister
+			\underline{34.16} &      % math_easy
+			\textbf{36.26} &      % math_hard
+			\textbf{23.80} &      % quad_easy
+			\textbf{26.19} &      % quad_mid
+			\textbf{31.50} &      % quad_hard
+			\textbf{34.35} &      % canteen_day
+			\textbf{33.12} &      % canteen_night
+			\textbf{30.44} &      % garden_day
+			\textbf{26.92} \\     % garden_night
+		\midrule
+		Raw Map w/ GT Pose &
+			46.63 &   	 % cloister
+			33.34 &  	 % math_easy
+			42.44 &		 % math_hard
+			29.72 &  		  	% quad_easy
+			34.11 &  		  	% quad_mid
+			40.76 &  		  	% quad_hard
+			36.29 &  		  	% canteen_day
+			34.67 &  	% canteen_night
+			31.63 &		% garden_day
+			34.58 \\		% garden_night
+		\bottomrule
+	\end{tabular}
+	{\captionsetup{justification=raggedright,singlelinecheck=false}
+%  \caption*{\small The best results are highlighted in \textbf{bold}, --- indicates a failure of the algorithm.}
+ \caption*{\small The best results are highlighted in \textbf{bold}, the second-best results are \underline{underlined}. --- indicates a failure of the algorithm.}
+ }
+ % \vspace{-10pt}
+\end{table*}
+
+\section{Experimental Results}
+In this section, experiments were conducted to compare our method against state-of-the-art algorithms on mapping and trajectory performance. Ablation studies were then provided.
+
+\subsection{Experiment Setup}
+\paragraph{Datasets and Data Processing}
+The Newer College~\cite{Ramezani2020newercollege} and FusionPortable~\cite{wei2024fusionportablev2} datasets were used for experiments, since they provide both ground truth (GT) 3D maps from survey-grade LiDAR scanners and ground truth trajectory poses. The FAST-LIO2~\cite{xu2021fastlio2} algorithm was used as an off-the-shelf LiDAR odometry to provide the initial pose estimation, although the proposed method is flexible to work with other algorithms that can estimate LiDAR poses. LiDAR scans and their corresponding FAST-LIO2 poses were sampled every 3 seconds, and only points within a 0.5–80 m sensing range were retained for training. 
+
+
+\begin{figure*}
+  \centering
+  \renewcommand{\arraystretch}{0.6}
+  \begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}
+  &&&&&&      
+  \multirow[c]{4}{*}{% <-- spans the next 4 rows
+        \includegraphics[width=0.069\textwidth]{images/rendered_map/color_bar.png}% -- error-bar image
+      }
+\\
+    \rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small quad\_easy (NC)}}} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_easy/shine.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_easy/pin_slam.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_easy/4dndf.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_easy/neld_ba.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_easy/ground_truth.png} &
+ 	\\
+    \rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small quad\_hard (NC)}}} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_hard/shine.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_hard/pin_slam.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_hard/4dndf.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_hard/neld_ba.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/quad_hard/ground_truth.png} &
+      \\ 
+    \rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small canteen\_night (FP)}}} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/canteen_night/shine.png}  &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/canteen_night/pin_slam.png}  &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/canteen_night/4dndf.png}  &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/canteen_night/neld_ba.png}  &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/canteen_night/ground_truth.png}  &
+      \\ % <-- empty; multirow occupies it
+    \rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small garden\_night (FP)}}} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/garden_night/shine.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/garden_night/pin_slam.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/garden_night/4dndf.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/garden_night/neld_ba.png} &
+      \includegraphics[width=0.175\textwidth]{images/rendered_map/garden_night/ground_truth.png} &
+      \\ % <-- empty; multirow occupies it
+    &
+      \small SHINE-Mapping~\cite{zhong2023shinemapping} &
+      \small PIN-SLAM~\cite{pan2024pinslam} &
+      \small 4dNDF~\cite{zhong20244dNDF} &
+      \small NeLD-BA (Ours) &
+      \small Ground Truth Map &
+      \\ 
+  \end{tabular}
+  \caption{\textbf{Qualitative Results for Rendered Maps of Newer College (NC) and FusionPortable (FP) Sequences.}}
+  \label{fig:rendered_map}
+\end{figure*}
+
+
+\paragraph{Comparison Algorithms}
+We compared raw point cloud maps generated by registering scans using poses from FAST-LIO2, GeoTrans~\cite{qin2023geotrans}, SGHR~\cite{wang2023sghr}, HBA~\cite{liu2022HBA}, and our method. The related work GeoNLF~\cite{xue2024geonlf} was not compared due to the lack of support for open-source implementation on the two used datasets. For HBA and our approach, the same input frames (sampled every 3 seconds) and initial pose estimation from FAST-LIO2 were used. GeoTrans and SGHR were evaluated with their official pre-trained models. % Frames for GeoTrans were scaled down using our method due to memory limits. 
+% A pair-wise registration was applied for GeoTrans. 
+Trajectory evaluation results are provided for all methods.
+
+
+
+For NeRF-rendered map evaluation, we conducted comparisons against three state-of-the-art LiDAR mapping algorithms with implicit scene representations: SHINE-Mapping~\cite{zhong2023shinemapping}, PIN-SLAM~\cite{pan2024pinslam}, and 4dNDF~\cite{zhong20244dNDF}. For SHINE-Mapping, we followed the official configuration guidelines to set the frame rate with FAST-LIO2 poses provided as input. % setting the frame rate to 10 scans for Newer College sequences and to every 20 frames for other sequences due to GPU memory limitations. 
+For PIN-SLAM, we employed the default configuration for the Newer College dataset, while relying on its internal SLAM to generate poses. For 4dNDF, the same LiDAR scans and FAST-LIO2 poses as provided to our method were used.% ensuring input parity and eliminating biases in downstream comparisons.
+
+
+\paragraph{Evaluation Metrics}
+To quantitatively assess map quality, we employed the L1-Chamfer distance (L1-CD), inlier Root Mean Square Error (RMSE), and the F1 score when evaluating NeRF-rendered maps against the corresponding ground truth reconstructions. For raw LiDAR-based maps, the L1-Chamfer distance was reported, as it directly captures geometric fidelity. An inlier threshold of 1 meter was adopted to filter out large outliers and focus on regions of meaningful spatial overlap. All mapping metrics were computed using the FusionPortable~\cite{wei2024fusionportablev2} evaluation framework. For trajectory accuracy, we evaluated the Absolute Trajectory Error (ATE) against the ground truth trajectories. ATE was computed with EVO~\cite{grupp2017evo}, after applying a rigid SE(3) alignment to remove differences due to coordinate frame initialization. This combination of metrics allows us to jointly evaluate both the structural fidelity of the reconstructed environment and the accuracy of the estimated trajectories.
+
+
+\subsection{Reconstruction and Mapping Evaluation}\label{sec:pcd_plot_map}
+
+\paragraph{Raw Point Cloud Map Evaluation}
+As shown in Table~\ref{tab:pcd_plotting_cd-eval}, our method substantially reduces the L1-Chamfer distance of raw maps when initialized with FAST-LIO2 poses, outperforming HBA and demonstrating strong improvements over the initial pose estimates. In contrast, HBA often fails to register point clouds effectively, likely due to its sensitivity to initialization. Interestingly, raw maps generated using ground truth poses yields a relatively higher L1-Chamfer distances for several Newer College sequences, suggesting that the provided ground truth poses are not perfectly accurate and may introduce additional misalignments. Qualitative results are shown in Figure~\ref{fig:raw_map_results}. Across sequences with both favorable initializations (e.g., quad\_easy) and challenging ones with poor initial poses (e.g., canteen\_day or math\_hard), our method consistently produces more coherent and structurally faithful raw maps compared to HBA.
+
+
+\paragraph{Rendered Map Evaluation}
+Table~\ref{tab:rendered_map} shows the qualitative results for rendered maps. Our algorithm outperforms SHINE-Mapping, PIN-SLAM and 4dNDF on all sequences except for F1 score on cloister sequence. Outperformance on FusionPortable sequences and hard sequences in Newer College is preliminary due to the pose refinement capabilities of our algorithm. For easier sequences, our rendering method is able to produce a cleaner map which reduces outliers. Qualitative results for mapping are shown in Figure~\ref{fig:rendered_map}, our method produces sharper maps while others produces map with more extra artifacts, notably in the quad\_easy sequence.
+
+% --- Rendered map quantitavie Result
+\begin{table*}
+  \caption{Evaluation of Rendered Maps}
+  \label{tab:rendered_map}
+  \centering
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{c l@{\hspace{7pt}}*{10}{c@{\hspace{7pt}}}}
+    \toprule
+      & & \multicolumn{6}{c@{\hspace{5pt}}}{Newer College} & \multicolumn{4}{c}{FusionPortable} \\
+    \cmidrule(lr){3-8} \cmidrule(lr){9-12}
+    {Metric} & Method &
+      \makecell{cloister} &
+      \makecell{math\_easy} &
+      \makecell{math\_hard} &
+      \makecell{quad\_easy} &
+      \makecell{quad\_mid} &
+      \makecell{quad\_hard} &
+      \makecell{canteen\_ \\ day} &
+      \makecell{canteen\_ \\ night} &
+      \makecell{garden\_ \\ day} &
+      \makecell{garden\_ \\ night} \\
+
+    \midrule
+    % ---------- Metric block: Chamfer Distance ----------
+	\multirow{4}{*}{\rotatebox[origin=c]{90}{\shortstack{L1-CD \\ $\downarrow$ [cm]}}} &
+    PIN\_SLAM~\cite{pan2024pinslam} &
+		56.29 &      % cloister
+		57.92 &      % math_easy
+		---  &      % math_hard
+		54.22 &      % quad_easy
+		57.48 &      % quad_mid
+		59.33 &      % quad_hard
+		51.40 &      % canteen_day
+		50.64 &      % canteen_night
+		51.26 &      % garden_day
+		49.47 \\     % garden_night
+    & SHINE-Mapping~\cite{zhong2023shinemapping} &
+		\underline{45.95} &      % cloister
+		\underline{45.19} &      % math_easy
+		\underline{54.25} &      % math_hard
+		\underline{37.45} &      % quad_easy
+		\underline{47.08} &      % quad_mid
+		\underline{51.10} &      % quad_hard
+		\underline{44.54} &      % canteen_day
+		\underline{44.68} &      % canteen_night
+		\underline{47.04} &      % garden_day
+		\underline{44.73} \\     % garden_night
+    & 4dNDF~\cite{zhong20244dNDF} &
+		55.57 &      % cloister
+		55.76 &      % math_easy
+		---  &      % math_hard
+		56.17 &      % quad_easy
+		59.53 &      % quad_mid
+		59.25 &      % quad_hard
+		52.75 &      % canteen_day
+		50.98 &      % canteen_night
+		58.47 &      % garden_day
+		58.79 \\     % garden_night
+    & NeLD-BA (Ours) &  
+		\textbf{45.71} &      % cloister
+		\textbf{37.99} &      % math_easy
+		\textbf{38.82} &      % math_hard
+		\textbf{23.62} &      % quad_easy
+		\textbf{24.90} &      % quad_mid
+		\textbf{31.05} &      % quad_hard
+		\textbf{38.34} &      % canteen_day
+		\textbf{37.83} &      % canteen_night
+		\textbf{33.77} &      % garden_day
+		\textbf{32.19} \\     % garden_night
+    % \addlinespace[0pt]
+	\midrule
+    % ---------- Metric block: F1 Score ----------
+	\multirow{4}{*}{\rotatebox[origin=c]{90}{F1 $\uparrow$ [\%]}} & 
+	PIN\_SLAM~\cite{pan2024pinslam} &
+		\textbf{90.3} &      % cloister
+		84.1 &      % math_easy
+		---  &      % math_hard
+		90.9 &      % quad_easy
+		78.8 &      % quad_mid
+		83.5 &      % quad_hard
+		62.2 &      % canteen_day
+		59.6 &      % canteen_night
+		81.5 &      % garden_day
+		83.3 \\     % garden_night
+    & SHINE-Mapping~\cite{zhong2023shinemapping}  &
+		\underline{89.8} &      % cloister
+		\underline{93.3} &      % math_easy
+		\underline{90.4} &      % math_hard
+		\textbf{95.9} &      % quad_easy
+		\underline{94.0} &      % quad_mid
+		\underline{91.9} &      % quad_hard
+		\underline{71.5} &      % canteen_day
+		\underline{69.2} &      % canteen_night
+		\textbf{86.5} &      % garden_day
+		\textbf{89.8} \\     % garden_night
+    & 4dNDF~\cite{zhong20244dNDF} &
+		83.8 &      % cloister
+		83.6 &      % math_easy
+		---  &      % math_hard
+		93.5 &      % quad_easy
+		91.8 &      % quad_mid
+		87.0 &      % quad_hard
+		64.7 &      % canteen_day
+		62.4 &      % canteen_night
+		82.2 &      % garden_day
+		85.0 \\     % garden_night
+    & NeLD-BA (Ours) & 
+		86.8 &      % cloister
+		\textbf{95.3} &      % math_easy
+		\textbf{94.3} &      % math_hard
+		\underline{95.5} &      % quad_easy
+		\textbf{94.8} &      % quad_mid
+		\textbf{94.0} &      % quad_hard
+		\textbf{75.4} &      % canteen_day
+		\textbf{73.1} &      % canteen_night
+		\underline{85.3} &      % garden_day
+		\underline{88.2} \\     % garden_night
+	\midrule
+    % ---------- Metric block: Inlier RMSE ----------
+	\multirow{4}{*}{\rotatebox[origin=c]{90}{\shortstack{In. RMSE \\ $\downarrow$ {[cm]}}}} & PIN\_SLAM~\cite{pan2024pinslam} &
+		30.29 &      % cloister
+		33.85 &      % math_easy
+		---  &      % math_hard
+		33.73 &      % quad_easy
+		36.28 &      % quad_mid
+		36.91 &      % quad_hard
+		31.27 &      % canteen_day
+		31.32 &      % canteen_night
+		29.38 &      % garden_day
+		28.83 \\     % garden_night
+    & SHINE-Mapping~\cite{zhong2023shinemapping}  &
+		\underline{19.88} &      % cloister
+		\underline{24.43} &      % math_easy
+		\underline{32.84} &      % math_hard
+		\underline{21.39} &      % quad_easy
+		\underline{29.46} &      % quad_mid
+		\underline{32.34} &      % quad_hard
+		\underline{29.10} &      % canteen_day
+		\underline{29.91} &      % canteen_night
+		\underline{26.68} &      % garden_day
+		\underline{25.32} \\     % garden_night
+    & 4dNDF~\cite{zhong20244dNDF} &
+		33.29 &      % cloister
+		35.07 &      % math_easy
+		---  &      % math_hard
+		39.98 &      % quad_easy
+		41.75 &      % quad_mid
+		39.24 &      % quad_hard
+		36.55 &      % canteen_day
+		35.92 &      % canteen_night
+		38.63 &      % garden_day
+		39.42 \\     % garden_night
+    & NeLD-BA (Ours) & 
+		\textbf{15.17} &      % cloister
+		\textbf{14.53} &      % math_easy
+		\textbf{15.70} &      % math_hard
+		\textbf{6.84} &      % quad_easy
+		\textbf{7.32} &      % quad_mid
+		\textbf{12.12} &      % quad_hard
+		\textbf{18.98} &      % canteen_day
+		\textbf{19.31} &      % canteen_night
+		\textbf{9.92} &      % garden_day
+		\textbf{9.36} \\     % garden_night
+    % \addlinespace[4pt]
+    \bottomrule
+  \end{tabular}
+  {\captionsetup{justification=raggedright,singlelinecheck=false}
+	\caption*{\small The best results are highlighted in \textbf{bold}, the second-best results are \underline{underlined}. --- indicates a failure of the algorithm.}
+ }
+\end{table*}
+
+\subsection{Trajectory Evaluation}
+% --- ATE quantitative result (No Newer College)
+\begin{table}
+	\caption{ATE Mean Values for Trajectory Evaluation for FusionPortable Dataset [meter]}
+	\label{tab:ate-eval}
+	\centering
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{l@{\hspace{2pt}}*{3}{c@{\hspace{7pt}}}}
+		\toprule
+		% & \multicolumn{3}{c}{FusionPortable} \\
+		% \cmidrule(lr){2-4}
+		Method &
+			\makecell{canteen\_day} &
+			\makecell{canteen\_night} &
+			\makecell{garden\_day} \\
+		\midrule
+		FAST-LIO2~\cite{xu2021fastlio2} &
+			1.049 & % canteen_day
+			1.015 & % canteen_night
+			2.251 \\ % garden_day
+		GeoTrans~\cite{qin2023geotrans} &
+			20.275 & % canteen_day
+			27.947 & % canteen_night
+			22.716 \\ % garden_day
+		SGHR~\cite{wang2023sghr} &
+			4.025 & % canteen_day
+			3.781 & % canteen_night
+			3.663 \\ % garden_day
+		HBA~\cite{liu2022HBA} &
+			1.048 & % canteen_day
+			1.016 & % canteen_night
+			2.262 \\ % garden_day
+		NeLD-BA (Ours) &
+			\textbf{0.053} & % canteen_day
+			\textbf{0.061} & % canteen_night
+			\textbf{0.043} \\ % garden_day
+		\bottomrule
+	\end{tabular}
+	{\captionsetup{justification=raggedright,singlelinecheck=false}
+ \caption*{\small The best results are highlighted in \textbf{bold}.}}
+\end{table}
+
+% --- Trajectory Qualitative Result
+\begin{figure*}[!t]
+	\centering
+	\renewcommand{\arraystretch}{1.0}
+	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}&
+		\includegraphics[width=0.28\textwidth]{images/traj/traj_canteen_day.png}    &
+		\includegraphics[width=0.29\textwidth]{images/traj/traj_canteen_night.png} &
+		\includegraphics[width=0.37\textwidth]{images/traj/traj_garden_day.png}\\
+		& \small canteen\_day & \small canteen\_night & \small garden\_day \\
+	\end{tabular}
+	\caption{\textbf{Qualitative Results for Trajectory for FusionPortable Sequences.} Circle markers represent the start of trajectories, cross markers represent the end of trajectories. }
+	\label{fig:trajectory_result}
+        \vspace{-10pt}
+\end{figure*}
+
+We also evaluate the optimized pose with ATE. The quantitative and qualitative results are shown in Table~\ref{tab:ate-eval} and Figure~\ref{fig:trajectory_result}. Both deep learning approaches, GeoTrans and SGHR, have failed to achieve a reasonable trajectory estimates, as the pre-trained models struggle to generalize to outdoor scenes. HBA provides minimal improvement from the initial FAST-LIO2 poses, while our method has achieved a near ground truth trajectory for FusionPortable sequences. Due to the potentially imperfect ground truth pose for Newer College sequences as discussed in Section~\ref{sec:pcd_plot_map}, trajectory evaluation for Newer College sequences is not provided.
+
+\subsection{Ablation Study}
+\begin{table}
+	\caption{Ablation Study on L1-Chamfer Distance of Raw Point Cloud Maps [meter]}
+	\label{tab:ablation_study}
+	\centering
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{lcccc}
+		\toprule 
+		& \multicolumn{2}{c@{\hspace{5pt}}}{Newer College} & \multicolumn{1}{c}{FusionPortable} \\
+		\cmidrule(lr){2-3}\cmidrule(lr){4-4}
+		Method & 
+			\makecell{math\_hard} & 
+			\makecell{quad\_hard} & 
+			\makecell{canteen\_day}\\
+		\midrule
+		\vspace{2pt}
+		\makecell[l]{w/o Hier. Sampling \\ w/o Cube Bound} & 
+			0.678 & % math_hard
+			0.653 & % quad_hard
+			0.387 \\ % canteen_day
+		w/o Hier. Sampling & 
+			0.489 & % math_hard
+			0.329 & % quad_hard
+			0.371 \\ % canteen_day
+		w/o Termination Loss & 
+			0.446 & % math_hard
+			0.466 & % quad_hard
+			0.431 \\ % canteen_day
+		\vspace{2pt}
+		w/o Surrogate Grad & 
+			0.548 & % math_hard
+			0.401 & % quad_hard
+			0.472 \\ % canteen_day
+		\makecell[l]{Ours w/ NeRF Hier. \\ Sampling~\cite{mildenhall2020nerfOG}} & 
+			0.373 & % math_hard
+			0.317 & % quad_hard
+			0.376 \\ % canteen_day
+		NeLD-BA (Ours) & 
+			\textbf{0.349} & % math_hard
+			\textbf{0.296} & % quad_hard
+			\textbf{0.328} \\ % canteen_day
+		\bottomrule
+	\end{tabular}
+	{\captionsetup{justification=raggedright,singlelinecheck=false}
+ 	\caption*{\small The best results are highlighted in \textbf{bold}.}}
+\end{table}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/ablation_study/quad_hard_ablation_nerf_sampling.png}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/ablation_study/quad_hard_ablation_ours_sampling.png}
+  \end{subfigure}
+  \caption{\textbf{Ablation Study Qualitative Results.} NeRF's~\cite{mildenhall2020nerfOG} sampling method result in an outlier frame (left) while our method successfully registered the outlier frame (right).}
+  \label{fig:ablation_qualitative_result}
+\end{figure}
+
+Ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}.
+
+\subsection{Limitations}
+While our algorithm has demonstrated superior capabilities in mapping and BA for scenes, we note that very large-scale sequences might present more challenges, leading to significant under-utilization of the NeRF model's representational capability. This is primarily due to the need to normalize point clouds within a $[-1,1]^3$ cube. Furthermore, our algorithm faces the common challenge of NeRFs that it requires a relatively long training times.

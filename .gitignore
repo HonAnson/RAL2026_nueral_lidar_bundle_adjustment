@@ -1,0 +1,27 @@
+# other stuff
+root.pdf
+images/
+archive/
+IEEEtran_bst_HOWTO.pdf
+
+# LaTeX build files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+
+# Editor-specific (optional)
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

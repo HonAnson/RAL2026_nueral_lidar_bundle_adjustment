@@ -1,0 +1,255 @@
+\section{Methodology}\label{sec:methodology}
+This section first formulates the LiDAR NeRF-BA problem. We then describe the insights on volume sampling for LiDAR NeRF and the proposed LiDAR NeRF-BA method. 
+
+\subsection{Problem Formulation: LiDAR NeRF-BA}
+In general, a NeRF model can be formulated as: 
+\begin{equation}\label{eq:NeRF_model}
+	\begin{split}
+		\hat{\sigma}, \hat{i} & = f\left(\gamma\left(T(\mathbf{x};\mathbf{p})\right);\Theta\right)
+	\end{split}
+\end{equation}
+where $\hat{\sigma}$ and $\hat{i}$ are the estimated density and intensity, respectively. $T(\cdot)$ denotes the Euclidean transformation function that transforms a volume sample $\mathbf{x} \in \mathbb{R}^5$ by sensor pose $\mathbf{p}$. $\gamma(\cdot)$ is the positional encoding function, and $f(\cdot)$ is an multi layer perceptron (MLP) with parameters $\Theta$, representing the NeRF model. 
+
+For any LiDAR ray denoted as $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, where $\mathbf{o}$ and $\mathbf{u}$ are the ray's origin and direction, with $z \in \mathbb{R}_{>0}$ being the range along the LiDAR ray, an estimated range $\hat{R}$ and intensity $\hat{I}$ from the NeRF model can be derived by the alpha compositing function of $N$ volume samples \cite{mildenhall2020nerfOG}:
+\begin{equation}\label{eq:alpha_compositing_part1}
+	\{\hat{R}(\mathbf{r}),\, \hat{I}(\mathbf{r})\} = \sum_{n=1}^{N} \hat{h}(z_n) \{z_n,\, \hat{i}_n\} 
+\end{equation}
+\begin{equation}\label{eq:termination_distribution}
+	\hat{h}(z_n) =
+	\exp\left(- \sum_{j=1}^{n-1} \hat{\sigma}_j \delta_j \right) 
+	\left(1 - \exp\left(-\hat{\sigma}_n \delta_n\right)\right) 
+\end{equation}
+where $\delta_n$ is the distance between neighboring samples, and $\hat{h}(z)$ is the predicted termination distribution of the ray.
+
+Given $S$ number of LiDAR scans of point clouds with their intensity values, and the initial estimates of their sensor poses $P = \{\mathbf{p}_s\}_{s=0}^S \subset SE(3)$, LiDAR NeRF-BA can be formulated as the following optimization problem:
+\begin{equation}\label{eq:NeLD_BA_problem_def}
+	\begin{split}
+		P^*, \Theta^* &=  \arg\min_{P, \Theta} \mathcal{L}(\hat{R}, \hat{I} \mid R, I)
+	\end{split}
+\end{equation}
+where $R$ and $I$ are the measured range and intensity from LiDAR sensors, and each $\mathbf{p}_s$ is parameterized as the Lie algebra $se(3)$ of $SE(3)$. The optimization goal is to find the set of optimal sensor poses $P^*$ and MLP parameters $\Theta^*$ that minimize a chosen loss function $\mathcal{L}$ (see Section \ref{sec:loss}). 
+
+\subsection{Volume Sampling for LiDAR NeRF-BA}\label{sec:volume_sampling}
+% In RGB NeRFs, pixel colours are estimated by volume rendering:
+% \begin{align}\label{eq:colour_volume_rendering}
+% \hat{C}(\mathbf{r}) = \sum_{i=1}^{N} T_i \left(1 - \exp\left(-\sigma_i \delta_i\right)\right) \mathbf{c}_i, \quad \text{where} \quad T_i = \exp\left(-\sum_{j=1}^{i-1} \sigma_j \delta_j\right)
+% \end{align}
+
+% In which with sufficient sampling positions to not alias the radiance field, the rendered colour does not change significantly with change in number of samples N.
+
+%--- Image Here---
+\begin{figure*}[h!]
+	\centering
+	\includegraphics[width=1\textwidth]{images/rgb_nerf_ba_vs_lidar_nerf_ba_2.png}
+	% \caption{\textbf{RGB NeRF-BA vs LiDAR NeRF-BA on Volume Sampling along Depth (Range) } 
+	% (a) Due to the inherent depth ambiguity in RGB images, depth is only \textit{implicitly} constrained in RGB NeRF-BA by multi-view rays (orange rays). Hence, samples of RGB NeRF have less constraints to coverage.
+	% (b) A small perturbation $\epsilon$ on LiDAR pose $\mathbf{p}$ results in a similar ray termination distribution, particularly behind the LiDAR return. %darker colored samples indicate higher ray termination probability. Thus, 
+	% Thus, sparse volume sampling would lead to little gradient to correct LiDAR pose, resulting in a poor LiDAR NeRF-BA result. 
+	% (c) NeRF \cite{mildenhall2020nerfOG} places fine samples around coarse samples weighted with termination probability, which could "miss" the true LiDAR return (first sharp increase in $\sigma$). We draw fine samples before coarse samples instead, which ensures that the samples cover the sharp high probability of $\sigma$ following the dirac delta function.}
+	\caption{\textbf{Comparison of RGB NeRF-BA and LiDAR NeRF-BA in Volume Sampling along Depth/Range.}
+		(a) In RGB NeRF-BA, depth is only \textit{implicitly} constrained via multi-view geometry (orange rays), due to the inherent depth ambiguity of RGB images. As a result, volume samples are loosely constrained. In contrast, LiDAR provides accurate range measurements which can be \textit{explicitly} used for volume sampling. 
+		(b) In LiDAR NeRF-BA, a small perturbation $\epsilon$ in the pose $\mathbf{p}$ produces a similar ray termination distribution, especially beyond the point of the LiDAR return. Consequently, sparse volume sampling yields minimal gradient for pose refinement, hindering optimization.
+		(c) NeRF \cite{mildenhall2020nerfOG} allocates fine samples near coarse ones, biased by termination probabilities, which can miss the sharp transition of $\sigma(z)$ (the highlighted region). To address this, we sample \textit{prior to} coarse ones, ensuring dense sampling around the high-probability spike in $\sigma$, akin to a step function.}
+	\label{fig:rgb_nerf_ba_vs_lidar_nerf_ba}
+\end{figure*}
+
+Compared to RGB NeRF-BA, which uses photometric
+loss for optimization~\cite{lin2021barf,wang2022nerfmm,chen2023l2gnerf}, LiDAR NeRF-BA should make full use of \textit{range loss} due to the strong geometric cue from LiDAR rays. While RGB NeRF-BA relies on multi-view geometry to optimize poses along depth, we argue LiDAR NeRF-BA should use \textit{range}, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba} (a).
+We have found that the density of volume sampling plays a critical role for LiDAR sensor pose optimization using range. As illustrated in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b), the estimated range is closely coupled to the volume sampling density. Specifically, dense volume samples are necessary to provide gradient signals for joint optimization of the NeRF model and the LiDAR poses. Notably, an accurate $\hat{R}$ does not imply an accurate $\mathbf{p}$; rather, an accurate $\mathbf{p}$ is explicitly defined by a dense volume sampling. 
+% Thus a sparse volume sampling along rays results in ambiguity for LiDAR sensor pose.
+
+
+With these insights in mind, we propose to first normalize the near and far planes for volume sampling to be within the $C = [-1,1]^3$ cube where possible. A near plane $z_n$ and a far plane $z_f$ are selected for volume sampling at $\mathbf{r}(z), z \in [z_n, z_f]$ with $[z_n, z_f]$ in $C$ for most rays.
+
+
+%As the termination distribution weight at coarse samples is conditioned on previous samples, fine sampling around positions only refines range estimation by half a bin at best.
+
+% Furthermore, we argue that the standard hierarchical sampling strategy used in NeRF is suboptimal for improving range estimation accuracy. In the original approach~\cite{mildenhall2020nerfOG}, fine samples are drawn around coarse ones, guided by weights derived from the coarse termination distribution, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). However, because the termination distribution at coarse samples is conditioned on previously sampled points, the refined fine sampling only allows for marginal improvement—typically no more than half a bin width—thus limiting its effectiveness for high-precision range refinement in LiDAR applications.
+
+
+% -- Depreciated: Not including cube bound image 
+% \begin{figure}
+% 	\centering
+% 	\includegraphics[width=0.38\textwidth]{images/cube_bound.png}
+% 	\caption{\textbf{Cube Bounding.} An illustration of bounding samples in a $[-1,1]^2$ cube. Where sensor A, B and C corresponds to equation \ref{eq:force_cube_two_conicide}, \ref{eq:force_cube_one_conicide} and \ref{eq:force_cube_no_conicide} respectively.}
+% 	\label{fig:cube_bound}
+% \end{figure}
+
+To generalize volume samples $\textbf{x}$ within $C$, we first choose a near plane lower bound $z_\text{low}$ and a far plane upper bound $z_\text{up}$. Then, for any LiDAR ray, consider the set of points $Z$ within $C$:
+\begin{equation}\label{eq:intersection_set}
+Z=\{\,z:\ \mathbf{r}(z)\in C\,\}
+\end{equation}
+$Z$ is either an interval $[c_n, c_f]$  with $c_n < c_f$, a singleton $\{c\}$ or an empty set $\varnothing$. In particular, if $Z$ is a singleton, then the ray's origin lies within $C$ and only the far plane needs to be bounded. $z_n$ and $z_f$ are then chosen using the following condition:
+\begin{equation}\label{eq:cube_bound_conditions}
+\small
+(z_n,z_f)=
+\begin{cases}
+\bigl(\max\{z_{\mathrm{low}},\,c_n\}, \ \min\{z_{\mathrm{up}},\,c_f\}\bigr),
+& \text{if } Z=[c_n,c_f] \\
+\bigl(z_{\mathrm{low}},\ \min\{z_{\mathrm{up}},\,c\}\bigr),
+& \text{if } Z=\{c\}\\[6pt]
+\bigl(c_n,\,c_f\bigr),
+& \text{if } Z=\varnothing
+\end{cases}
+\end{equation}
+Note that this bounding is only possible for point clouds as the 3D positions for points are provided, unlike images with a potentially unbounded scene. This bounding is most effective for rays with origin close to the scene boundary and pointing away from $[0,0,0]$.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.48\textwidth]{images/ray_term_dist_comparison.png}
+	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray.} 8192 uniform volume samples from a LiDAR ray of a scan in the Newer College dataset are used to statistically reconstruct the ground truth ray termination distribution. It can be seen that our method better approximates the ground truth ray termination distribution, which is critical for providing accurate gradients for training LiDAR NeRF-BA.}
+	\label{fig:ray_termination_dist_comparison}
+\end{figure}
+
+Second, the vanilla hierarchical sampling strategy is sub-optimal for improving range estimation accuracy. In the original NeRF approach, fine samples were placed in a bin around coarse samples, guided by weights derived from the coarse termination distribution \cite{mildenhall2020nerfOG}, as shown in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). However, this strategy does not effectively resolve sensor pose ambiguity along the ray direction. In particular, fine samples placed after the coarse sample contribute little on removing the ambiguity in the sensor pose, as they fall beyond the region of highest sensitivity in the termination distribution.
+
+Thus, we propose to place fine samples at volumes before coarse samples as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba} (c). This fully utilizes the fine samples and eliminates range ambiguity in both LiDAR NeRF-BA and mapping as shown in Figure~\ref{fig:ray_termination_dist_comparison}.
+
+\subsection{On Fourier Positional Encoding}
+Positional encoding is the key for detailed scene reconstruction in both RGB NeRF and LiDAR NeRF~\cite{mildenhall2020nerfOG}. The Fourier positional encoding function $\gamma(\cdot)$ for feature $x$ is \cite{tancik2020fourierfeatures}:
+\begin{align}\label{eq:fourier_positional_encoding_0}
+	\gamma(x) & = \left[x, \gamma_0(x), \gamma_1(x), \dots, \gamma_{L-1}(x)\right] \in \mathbb{R}^{1 + 2L}
+\end{align}
+where $\gamma_k(x) = \left[\cos\left(2^k \pi x\right), \sin\left(2^k \pi x\right)\right] \in \mathbb{R}^{2}$.
+
+
+% \begin{align}\label{eq:fourier_positional_encoding_0}
+% 	\gamma(\mathbf{x}) & = \left[\mathbf{x}, \gamma_0(\mathbf{x}), \gamma_1(\mathbf{x}), \dots, \gamma_{L-1}(\mathbf{x})\right] \in \mathbb{R}^{3 + 6L}
+% \end{align}
+% where $\gamma_k(\mathbf{x}) = \left[\cos\left(2^k \pi \mathbf{x}\right), \sin\left(2^k \pi \mathbf{x}\right)\right] \in \mathbb{R}^{6}$.
+
+% Older equation:
+% Where: 
+% \begin{align}\label{eq:fourier_positional_encoding_1}
+% 	\gamma_k(x) & = \left[\cos\left(2^k \pi x\right), \sin\left(2^k \pi x\right)\right] \in \mathbb{R}^{6}
+% \end{align}
+
+BARF \cite{lin2021barf} has achieved impressive RGB NeRF-BA results by gradually activating Fourier feature frequencies. This allows camera poses to be initially refined in a low-frequency radiance field, and then to learn the image details when the full spectrum is activated. For outdoor scenes, using high-frequency encoding is desired to ensure the reconstruction of scene details~\cite{martinbrualla2021nerfinwild}. Further increasing encoding frequency, however, results in a $2^k\pi$ amplification in the encoding gradient. This causes gradients in $\mathbf{p}$ to explode eventually, leading to difficult BA or causing $\mathbf{p}$ to escape from local minima. 
+
+Inspired by the successful use of \textit{surrogate gradient} to optimize spike-neural networks~\cite{Zenke2021surrogate}, the following surrogate gradient for Fourier positional encoding is proposed:
+% \begin{align}\label{eq:surrogate_fourier_gradient}
+% 	{\frac{\partial \gamma_k^\text{smooth}(x)}{\partial x}}
+% 	=
+	% \begin{bmatrix}
+	% 	- \sin(2^k \pi x) , \cos(2^k \pi x)
+	% \end{bmatrix}
+% \end{align}
+
+\begin{align}\label{eq:surrogate_fourier_gradient}
+	{\frac{\partial \gamma_k^\text{smooth}(x)}{\partial x}}
+	= \frac{1}{2^k\pi} {\frac{\partial \gamma_k(x)}{\partial x}}  = 	\begin{bmatrix}
+		- \sin(2^k \pi x) , \cos(2^k \pi x)
+	\end{bmatrix}
+\end{align}
+
+The normal positional encoding function in equation~\ref{eq:fourier_positional_encoding_0} was used in the forward pass, and the gradient function in equation~\ref{eq:surrogate_fourier_gradient} was used in the backwards pass to avoid gradient amplification. Clearly, $\gamma^\text{smooth}_k(\cdot)$ preserves the gradient direction of $\gamma_k(\cdot)$ while removing the amplification component. This allows for using high-frequency Fourier features with no amplification on gradients, ensuring a smooth gradient for $\mathbf{p}$ even for large $L$. Additionally, optimization of sensor poses starts only when the $k^*$th frequency for position features is activated. This allows a coarse reconstruction to first be reached by the NeRF model and the sensor pose can be more stably optimized towards the global minima.
+
+
+% --- Raw Map Image result [Overview | zoomin]
+\begin{figure*}
+	\centering
+	\renewcommand{\arraystretch}{0.8}
+	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}
+		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small quad\_easy (NC)}}} &
+			\includegraphics[width=0.2\textwidth]{images/raw_map/quad_easy/ground_truth.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/fastlio_initial.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/hba.png}     &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/balm.png}    &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/neld_ba.png} \\
+
+		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small quad\_hard (NC)}}} &
+			\includegraphics[width=0.2\textwidth]{images/raw_map/quad_hard/ground_truth.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/fastlio_initial.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/hba.png}     &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/balm.png}    &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/neld_ba.png} \\
+
+		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small math\_hard (NC)}}} &
+			\includegraphics[width=0.2\textwidth]{images/raw_map/math_hard/ground_truth.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/fastlio_initial.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/hba.png}&
+			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/balm.png}    &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/neld_ba.png} \\
+
+		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small canteen\_day (FP)}}} &
+			\includegraphics[width=0.2\textwidth]{images/raw_map/canteen_day/ground_truth.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/fastlio_initial.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/hba.png}     &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/balm.png}    &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/neld_ba.png} \\
+
+		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small garden\_day (FP)}}} &
+			\includegraphics[width=0.20\textwidth]{images/raw_map/garden_day/ground_truth.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/fastlio_initial.png} &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/hba.png}     &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/balm.png}    &
+			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/neld_ba.png} \\
+		& 
+        	\small Ground Truth Map &
+			\small FAST-LIO2~\cite{xu2021fastlio2} (initial) & 
+			\small HBA~\cite{liu2022HBA} & 
+			\small BALM ~\cite{liu2021balm} & 
+			\small NeLD-BA (ours)\\
+	\end{tabular}
+	\caption{\textbf{Qualitative Results of Raw Point Cloud Maps for Newer College (NC) and FusionPortable (FP) Sequences.}}
+	\label{fig:raw_map_results}
+\end{figure*}
+
+ 
+
+\subsection{Loss Functions}\label{sec:loss}
+To train the LiDAR NeRF-BA model, L1 and L2 losses are used on the rendered range and intensity of the coarse and fine rendered ranges, respectively:
+% --- equation here ---
+\begin{align}\label{eq:depth_intensity_loss}
+	\mathcal{L}_\text{range}  = \sum_\mathbf{r}\left\| \hat{R}(\mathbf{r}) - R(\mathbf{r}) \right\|_1 \\
+	\mathcal{L}_\text{intensity} = \sum_\mathbf{r}\left\| \hat{I}(\mathbf{r}) - I(\mathbf{r}) \right\|_2^2
+\end{align}
+The distribution loss in DS-NeRF~\cite{deng2024dsnerf} is also used for ray termination distribution in coarse estimation, which is the KL divergence loss for comparing the estimated termination distribution $\hat{h}(z)$ against a targeted distribution $h^*(z)$:
+% --- equation here ---
+\begin{align}\label{eq:termination_distribution_loss}
+	\mathcal{L}_\text{termination} = \sum_\mathbf{r}\sum_{n=1}^N h^*(z_n) \cdot ln\left(\frac{\hat{h}(z_n)}{h^*(z_n)}\right)
+\end{align}
+
+While DS-NeRF modeled the target termination distribution as a Gaussian distribution with a small variance, we leverage the fact that range is provided in LiDAR measurements and propose a pseudo dirac delta function as the targeted termination distribution. This effectively provides that the ray termination probability in the first sample after ray termination is 1:
+% --- equation here ---
+\begin{align}
+	\label{eq:pseudo_dirac_delta}
+	h^*(z_n) =
+	\begin{cases}
+		1, & \text{if } n = \underset{j \in \mathbb{N},\; z_j - R > 0}{\arg\min} { \left\| z_j - R \right\| } \\
+		0, & \text{otherwise}
+	\end{cases}
+\end{align}
+
+Our final loss function $\mathcal{L}$ is:
+% --- equation here ---
+\begin{align}
+\mathcal{L} 
+&= \lambda_\text{coarse} \cdot 
+   \bigl(\lambda_d \mathcal{L}_\text{range}^c 
+       + \lambda_i \mathcal{L}_\text{intensity}^c 
+       + \lambda_h \mathcal{L}_\text{termination}^c \bigr) \notag \\
+&\quad + (\lambda_d \mathcal{L}_\text{range}^f
+       + \lambda_i \mathcal{L}_\text{intensity}^f
+       + \lambda_h \mathcal{L}_\text{termination}^f)
+\label{eq:final_loss}
+\end{align}
+where superscript $c$ and $f$ denote loss functions for coarse and fine estimations, and $\lambda$s are hyperparameters to be tuned.
+
+\subsection{Mapping}
+A rendered 3D map can be built by casting rays from the optimized sensor poses with the original ray directions in LiDAR frames. Using the same hierarchical sampling strategy mentioned above, the termination distances $z_\text{map}$ of rays are determined to be at the highest termination probability position per space:
+\begin{align}
+	\label{eq:mapping_with_termination_density}
+	z_{\text{map}} = \arg\max_{i} \left( \frac{h(z_i)}{\delta_i} \right)
+\end{align}
+Finally, we combine points at $\mathbf{r}(z_\text{map})$ from all frames to create a rendered map.
+
+\subsection{Implementation Details}\label{par:implementation_detail}
+In our implementation, each scan was voxelized with a grid size of 0.05 m. % all frames and sensor positions were uniformly normalized together into the $[-1,1]^3$. 
+Our model architecture follows NeRF in the Wild~\cite{martinbrualla2021nerfinwild}, with a hidden layer size of 512, positional encoding of $L=15$ for position features and $L=4$ for direction features. All models were trained for 160k iterations. Fourier features were gradually activated using BARF's method~\cite{lin2021barf} from iteration 0 to 120k. Sensor poses were unfrozen when $k^*=6$ frequency for position features was activated.  
+
+The number of coarse and fine samples was increased from 32 to 64 and from 16 to 32 between iteration 0 to iteration 120k. Learning rates were exponentially decayed from $5\times10^{-5}$ to $2\times10^{-5}$. % $2\times10^{-4}$ to $2\times10^{-5}$ (rotation), and $5\times10^{-4}$ to $5\times10^{-5}$ (position). 
+The Pytorch~\cite{paszke2019pytorch} implementation of Adam optimizer~\cite{kingma2017adam} was used for training. 
+
+Hyperparameters were obtained through grid search with $\lambda_\text{coarse}=0.1$, $\lambda_\text{fine}=1$, $\lambda_\text{d}=1$, $\lambda_\text{i}=1$ and $\lambda_\text{h}=1$. The same hyperparameters were used for all sequences. Rendered maps were generated using 128 coarse samples and 128 fine samples with our proposed volume sampling strategy. All models took approximately 1.5 hours to be trained on a single NVIDIA 4060 GPU.
