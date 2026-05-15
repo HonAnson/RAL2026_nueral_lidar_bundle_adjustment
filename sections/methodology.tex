@@ -5,14 +5,14 @@ This section first formulates the LiDAR NeRF-BA problem. We then describe the in
 In general, a NeRF model can be formulated as: 
 \begin{equation}\label{eq:NeRF_model}
 	\begin{split}
-		\hat{\sigma}, \hat{i} & = f\left(\gamma\left(T(\mathbf{x};\mathbf{p})\right);\Theta\right)
+		\hat{\sigma} = f\left(\gamma\left(T(\mathbf{x};\mathbf{p})\right);\Theta\right)
 	\end{split}
 \end{equation}
-where $\hat{\sigma}$ and $\hat{i}$ are the estimated density and intensity, respectively. $T(\cdot)$ denotes the Euclidean transformation function that transforms a volume sample $\mathbf{x} \in \mathbb{R}^5$ by sensor pose $\mathbf{p}$. $\gamma(\cdot)$ is the positional encoding function, and $f(\cdot)$ is an multi layer perceptron (MLP) with parameters $\Theta$, representing the NeRF model. 
+where $\hat{\sigma}$ is the estimated density. $T(\cdot)$ denotes the Euclidean transformation function that transforms a volume sample $\mathbf{x} \in \mathbb{R}^5$ by sensor pose $\mathbf{p}$. $\gamma(\cdot)$ is the positional encoding function, and $f(\cdot)$ is an multi layer perceptron (MLP) with parameters $\Theta$, representing the NeRF model. 
 
-For any LiDAR ray denoted as $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, where $\mathbf{o}$ and $\mathbf{u}$ are the ray's origin and direction, with $z \in \mathbb{R}_{>0}$ being the range along the LiDAR ray, an estimated range $\hat{R}$ and intensity $\hat{I}$ from the NeRF model can be derived by the alpha compositing function of $N$ volume samples \cite{mildenhall2020nerfOG}:
+For any LiDAR ray denoted as $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, where $\mathbf{o}$ and $\mathbf{u}$ are the ray's origin and direction, with $z \in \mathbb{R}_{>0}$ being the range along the LiDAR ray, an estimated range $\hat{R}$ from the NeRF model can be derived by the alpha compositing function of $N$ volume samples \cite{mildenhall2020nerfOG}:
 \begin{equation}\label{eq:alpha_compositing_part1}
-	\{\hat{R}(\mathbf{r}),\, \hat{I}(\mathbf{r})\} = \sum_{n=1}^{N} \hat{h}(z_n) \{z_n,\, \hat{i}_n\} 
+	\hat{R}(\mathbf{r}) = \sum_{n=1}^{N} \hat{h}(z_n) z_n 
 \end{equation}
 \begin{equation}\label{eq:termination_distribution}
 	\hat{h}(z_n) =
@@ -24,10 +24,10 @@ where $\delta_n$ is the distance between neighboring samples, and $\hat{h}(z)$ i
 Given $S$ number of LiDAR scans of point clouds with their intensity values, and the initial estimates of their sensor poses $P = \{\mathbf{p}_s\}_{s=0}^S \subset SE(3)$, LiDAR NeRF-BA can be formulated as the following optimization problem:
 \begin{equation}\label{eq:NeLD_BA_problem_def}
 	\begin{split}
-		P^*, \Theta^* &=  \arg\min_{P, \Theta} \mathcal{L}(\hat{R}, \hat{I} \mid R, I)
+		P^*, \Theta^* &=  \arg\min_{P, \Theta} \mathcal{L}(\hat{R} \mid R)
 	\end{split}
 \end{equation}
-where $R$ and $I$ are the measured range and intensity from LiDAR sensors, and each $\mathbf{p}_s$ is parameterized as the Lie algebra $se(3)$ of $SE(3)$. The optimization goal is to find the set of optimal sensor poses $P^*$ and MLP parameters $\Theta^*$ that minimize a chosen loss function $\mathcal{L}$ (see Section \ref{sec:loss}). 
+where $R$ is the measured range from LiDAR sensors, and each $\mathbf{p}_s$ is parameterized as the Lie algebra $se(3)$ of $SE(3)$. The optimization goal is to find the set of optimal sensor poses $P^*$ and MLP parameters $\Theta^*$ that minimize a chosen loss function $\mathcal{L}$ (see Section \ref{sec:loss}). 
 
 \subsection{Volume Sampling for LiDAR NeRF-BA}\label{sec:volume_sampling}
 % In RGB NeRFs, pixel colours are estimated by volume rendering:
@@ -49,7 +49,7 @@ where $R$ and $I$ are the measured range and intensity from LiDAR sensors, and e
 \end{figure*}
 
 Compared to RGB NeRF-BA, which uses photometric
-loss for optimization~\cite{lin2021barf,wang2022nerfmm,chen2023l2gnerf}, LiDAR NeRF-BA should make full use of \textit{range loss} due to the strong geometric cue from LiDAR rays. While RGB NeRF-BA relies on multi-view geometry to optimize poses along depth, we argue LiDAR NeRF-BA should use \textit{range}, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba} (a).
+loss for optimization~\cite{lin2021barf,wang2022nerfmm,chen2023l2gnerf}, LiDAR NeRF-BA should make full use of \textit{range loss} due to the strong geometric cue from LiDAR rays. While RGB NeRF-BA relies on multi-view geometry to optimize poses along depth, we argue that LiDAR NeRF-BA should use \textit{range}, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba} (a).
 We have found that the density of volume sampling plays a critical role for LiDAR sensor pose optimization using range. As illustrated in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b), the estimated range is closely coupled to the volume sampling density. Specifically, dense volume samples are necessary to provide gradient signals for joint optimization of the NeRF model and the LiDAR poses. Notably, an accurate $\hat{R}$ does not imply an accurate $\mathbf{p}$; rather, an accurate $\mathbf{p}$ is explicitly defined by a dense volume sampling. 
 % Thus a sparse volume sampling along rays results in ambiguity for LiDAR sensor pose.
 
