@@ -41,11 +41,6 @@ where $R$ and $I$ are the measured range and intensity from LiDAR sensors, and e
 \begin{figure*}[h!]
 	\centering
 	\includegraphics[width=1\textwidth]{images/rgb_nerf_ba_vs_lidar_nerf_ba_2.png}
-	% \caption{\textbf{RGB NeRF-BA vs LiDAR NeRF-BA on Volume Sampling along Depth (Range) } 
-	% (a) Due to the inherent depth ambiguity in RGB images, depth is only \textit{implicitly} constrained in RGB NeRF-BA by multi-view rays (orange rays). Hence, samples of RGB NeRF have less constraints to coverage.
-	% (b) A small perturbation $\epsilon$ on LiDAR pose $\mathbf{p}$ results in a similar ray termination distribution, particularly behind the LiDAR return. %darker colored samples indicate higher ray termination probability. Thus, 
-	% Thus, sparse volume sampling would lead to little gradient to correct LiDAR pose, resulting in a poor LiDAR NeRF-BA result. 
-	% (c) NeRF \cite{mildenhall2020nerfOG} places fine samples around coarse samples weighted with termination probability, which could "miss" the true LiDAR return (first sharp increase in $\sigma$). We draw fine samples before coarse samples instead, which ensures that the samples cover the sharp high probability of $\sigma$ following the dirac delta function.}
 	\caption{\textbf{Comparison of RGB NeRF-BA and LiDAR NeRF-BA in Volume Sampling along Depth/Range.}
 		(a) In RGB NeRF-BA, depth is only \textit{implicitly} constrained via multi-view geometry (orange rays), due to the inherent depth ambiguity of RGB images. As a result, volume samples are loosely constrained. In contrast, LiDAR provides accurate range measurements which can be \textit{explicitly} used for volume sampling. 
 		(b) In LiDAR NeRF-BA, a small perturbation $\epsilon$ in the pose $\mathbf{p}$ produces a similar ray termination distribution, especially beyond the point of the LiDAR return. Consequently, sparse volume sampling yields minimal gradient for pose refinement, hindering optimization.
@@ -65,15 +60,6 @@ With these insights in mind, we propose to first normalize the near and far plan
 %As the termination distribution weight at coarse samples is conditioned on previous samples, fine sampling around positions only refines range estimation by half a bin at best.
 
 % Furthermore, we argue that the standard hierarchical sampling strategy used in NeRF is suboptimal for improving range estimation accuracy. In the original approach~\cite{mildenhall2020nerfOG}, fine samples are drawn around coarse ones, guided by weights derived from the coarse termination distribution, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). However, because the termination distribution at coarse samples is conditioned on previously sampled points, the refined fine sampling only allows for marginal improvement—typically no more than half a bin width—thus limiting its effectiveness for high-precision range refinement in LiDAR applications.
-
-
-% -- Depreciated: Not including cube bound image 
-% \begin{figure}
-% 	\centering
-% 	\includegraphics[width=0.38\textwidth]{images/cube_bound.png}
-% 	\caption{\textbf{Cube Bounding.} An illustration of bounding samples in a $[-1,1]^2$ cube. Where sensor A, B and C corresponds to equation \ref{eq:force_cube_two_conicide}, \ref{eq:force_cube_one_conicide} and \ref{eq:force_cube_no_conicide} respectively.}
-% 	\label{fig:cube_bound}
-% \end{figure}
 
 To generalize volume samples $\textbf{x}$ within $C$, we first choose a near plane lower bound $z_\text{low}$ and a far plane upper bound $z_\text{up}$. Then, for any LiDAR ray, consider the set of points $Z$ within $C$:
 \begin{equation}\label{eq:intersection_set}
@@ -152,35 +138,35 @@ The normal positional encoding function in equation~\ref{eq:fourier_positional_e
 	\renewcommand{\arraystretch}{0.8}
 	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}
 		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small quad\_easy (NC)}}} &
-			\includegraphics[width=0.2\textwidth]{images/raw_map/quad_easy/ground_truth.png} &
+			\includegraphics[width=0.2\textwidth]{images/overview_map/quad_easy.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/fastlio_initial.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/hba.png}     &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/balm.png}    &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_easy/neld_ba.png} \\
 
 		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small quad\_hard (NC)}}} &
-			\includegraphics[width=0.2\textwidth]{images/raw_map/quad_hard/ground_truth.png} &
+			\includegraphics[width=0.2\textwidth]{images/overview_map/quad_hard.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/fastlio_initial.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/hba.png}     &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/balm.png}    &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/neld_ba.png} \\
 
 		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small math\_hard (NC)}}} &
-			\includegraphics[width=0.2\textwidth]{images/raw_map/math_hard/ground_truth.png} &
+			\includegraphics[width=0.2\textwidth]{images/overview_map/math_hard.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/fastlio_initial.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/hba.png}&
 			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/balm.png}    &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/neld_ba.png} \\
 
 		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small canteen\_day (FP)}}} &
-			\includegraphics[width=0.2\textwidth]{images/raw_map/canteen_day/ground_truth.png} &
+			\includegraphics[width=0.2\textwidth]{images/overview_map/canteen_day.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/fastlio_initial.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/hba.png}     &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/balm.png}    &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/canteen_day/neld_ba.png} \\
 
 		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small garden\_day (FP)}}} &
-			\includegraphics[width=0.20\textwidth]{images/raw_map/garden_day/ground_truth.png} &
+			\includegraphics[width=0.20\textwidth]{images/overview_map/garden_day.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/fastlio_initial.png} &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/hba.png}     &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/garden_day/balm.png}    &

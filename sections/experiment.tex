@@ -83,7 +83,7 @@
 %  \caption*{\small The best results are highlighted in \textbf{bold}, --- indicates a failure of the algorithm.}
  \caption*{\small The best results are highlighted in \textbf{bold}, the second-best results are \underline{underlined}. --- indicates a failure of the algorithm.}
  }
- % \vspace{-10pt}
+ \vspace{-10pt}
 \end{table*}
 
 \section{Experimental Results}
@@ -346,61 +346,70 @@ Table~\ref{tab:rendered_map} shows the qualitative results for rendered maps. Ou
 	\label{tab:ate-eval}
 	\centering
 	\renewcommand{\arraystretch}{1.2}
-	\begin{tabular}{l@{\hspace{2pt}}*{3}{c@{\hspace{7pt}}}}
+	\begin{tabular}{l@{\hspace{2pt}}*{4}{c@{\hspace{5pt}}}}
 		\toprule
-		% & \multicolumn{3}{c}{FusionPortable} \\
-		% \cmidrule(lr){2-4}
 		Method &
 			\makecell{canteen\_day} &
 			\makecell{canteen\_night} &
-			\makecell{garden\_day} \\
+			\makecell{garden\_day} &
+			\makecell{garden\_night} \\
+		\midrule
+		SGHR~\cite{wang2023sghr} &
+			4.025 & 	% canteen_day
+			3.781 & 	% canteen_night
+			3.663 & 	% garden_day
+			---\\   	% garden_night
+		GeoTrans~\cite{qin2023geotrans} &
+			0.997 &      % canteen_day
+			1.676 &      % canteen_night
+			0.280 &      % garden_day
+			0.405 \\     % garden_night
+		HBA~\cite{liu2022HBA} &
+			0.082 &      % canteen_day
+			0.085 &      % canteen_night
+			0.118 &      % garden_day
+			0.126 \\     % garden_night
+		NeLD-BA (Ours) &
+			\textbf{0.064} & % canteen_day
+			\textbf{0.071} & % canteen_night
+			\textbf{0.044} & % garden_day
+			\textbf{0.043} \\ % garden_night
 		\midrule
 		FAST-LIO2~\cite{xu2021fastlio2} &
-			1.049 & % canteen_day
-			1.015 & % canteen_night
-			2.251 \\ % garden_day
-		GeoTrans~\cite{qin2023geotrans} &
-			20.275 & % canteen_day
-			27.947 & % canteen_night
-			22.716 \\ % garden_day
-		SGHR~\cite{wang2023sghr} &
-			4.025 & % canteen_day
-			3.781 & % canteen_night
-			3.663 \\ % garden_day
-		HBA~\cite{liu2022HBA} &
-			1.048 & % canteen_day
-			1.016 & % canteen_night
-			2.262 \\ % garden_day
-		NeLD-BA (Ours) &
-			\textbf{0.053} & % canteen_day
-			\textbf{0.061} & % canteen_night
-			\textbf{0.043} \\ % garden_day
+			0.070 &      % canteen_day
+			0.078 &      % canteen_night
+			0.073 &      % garden_day
+			0.080 \\     % garden_night
 		\bottomrule
 	\end{tabular}
 	{\captionsetup{justification=raggedright,singlelinecheck=false}
- \caption*{\small The best results are highlighted in \textbf{bold}.}}
+ 	\caption*{\small The best results are highlighted in \textbf{bold}.}}
+    \vspace{-20pt}
 \end{table}
 
 % --- Trajectory Qualitative Result
 \begin{figure*}[!t]
+	\label{fig:trajectory_result}
 	\centering
 	\renewcommand{\arraystretch}{1.0}
-	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}&
-		\includegraphics[width=0.28\textwidth]{images/traj/traj_canteen_day.png}    &
-		\includegraphics[width=0.29\textwidth]{images/traj/traj_canteen_night.png} &
-		\includegraphics[width=0.37\textwidth]{images/traj/traj_garden_day.png}\\
-		& \small canteen\_day & \small canteen\_night & \small garden\_day \\
+	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}&
+		\includegraphics[height=0.21\textwidth]{images/traj/canteen_day.png}    &
+		\includegraphics[height=0.21\textwidth]{images/traj/canteen_night.png} &
+		\includegraphics[height=0.21\textwidth]{images/traj/garden_day.png}& 
+		\includegraphics[height=0.21\textwidth]{images/traj/garden_night.png}\\
+		& \small canteen\_day & \small canteen\_night & \small garden\_day & \small garden\_night\\
 	\end{tabular}
 	\caption{\textbf{Qualitative Results for Trajectory for FusionPortable Sequences.} Circle markers represent the start of trajectories, cross markers represent the end of trajectories. }
-	\label{fig:trajectory_result}
-        \vspace{-10pt}
+    \vspace{-10pt}
 \end{figure*}
 
 We also evaluate the optimized pose with ATE. The quantitative and qualitative results are shown in Table~\ref{tab:ate-eval} and Figure~\ref{fig:trajectory_result}. Both deep learning approaches, GeoTrans and SGHR, have failed to achieve a reasonable trajectory estimates, as the pre-trained models struggle to generalize to outdoor scenes. HBA provides minimal improvement from the initial FAST-LIO2 poses, while our method has achieved a near ground truth trajectory for FusionPortable sequences. Due to the potentially imperfect ground truth pose for Newer College sequences as discussed in Section~\ref{sec:pcd_plot_map}, trajectory evaluation for Newer College sequences is not provided.
 
 \subsection{Ablation Study}
+Ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}.
+
 \begin{table}
-	\caption{Ablation Study on L1-Chamfer Distance of Raw Point Cloud Maps [meter]}
+	\caption{Ablation Study on L1-Chamfer Distance of Raw Point Cloud Maps [cm]}
 	\label{tab:ablation_study}
 	\centering
 	\renewcommand{\arraystretch}{1.2}
@@ -413,38 +422,35 @@ We also evaluate the optimized pose with ATE. The quantitative and qualitative r
 			\makecell{quad\_hard} & 
 			\makecell{canteen\_day}\\
 		\midrule
-		\vspace{2pt}
 		\makecell[l]{w/o Hier. Sampling \\ w/o Cube Bound} & 
-			0.678 & % math_hard
-			0.653 & % quad_hard
-			0.387 \\ % canteen_day
+			67.8 & % math_hard
+			65.3 & % quad_hard
+			43.0 \\ % canteen_day
 		w/o Hier. Sampling & 
-			0.489 & % math_hard
-			0.329 & % quad_hard
-			0.371 \\ % canteen_day
+			48.9 & % math_hard
+			32.9 & % quad_hard
+			37.9 \\ % canteen_day
 		w/o Termination Loss & 
-			0.446 & % math_hard
-			0.466 & % quad_hard
-			0.431 \\ % canteen_day
-		\vspace{2pt}
+			44.6 & % math_hard
+			46.6 & % quad_hard
+			43.8 \\ % canteen_day
 		w/o Surrogate Grad & 
-			0.548 & % math_hard
-			0.401 & % quad_hard
-			0.472 \\ % canteen_day
+			54.8 & % math_hard
+			40.1 & % quad_hard
+			59.7 \\ % canteen_day
 		\makecell[l]{Ours w/ NeRF Hier. \\ Sampling~\cite{mildenhall2020nerfOG}} & 
-			0.373 & % math_hard
-			0.317 & % quad_hard
-			0.376 \\ % canteen_day
+			37.3 & % math_hard
+			31.7 & % quad_hard
+			34.8 \\ % canteen_day
 		NeLD-BA (Ours) & 
-			\textbf{0.349} & % math_hard
-			\textbf{0.296} & % quad_hard
-			\textbf{0.328} \\ % canteen_day
+			\textbf{34.9} & % math_hard
+			\textbf{29.6} & % quad_hard
+			\textbf{34.5} \\ % canteen_day
 		\bottomrule
 	\end{tabular}
 	{\captionsetup{justification=raggedright,singlelinecheck=false}
  	\caption*{\small The best results are highlighted in \textbf{bold}.}}
 \end{table}
-
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.49\linewidth}
@@ -458,8 +464,6 @@ We also evaluate the optimized pose with ATE. The quantitative and qualitative r
   \caption{\textbf{Ablation Study Qualitative Results.} NeRF's~\cite{mildenhall2020nerfOG} sampling method result in an outlier frame (left) while our method successfully registered the outlier frame (right).}
   \label{fig:ablation_qualitative_result}
 \end{figure}
-
-Ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}.
-
+\vspace{-10pt}
 \subsection{Limitations}
 While our algorithm has demonstrated superior capabilities in mapping and BA for scenes, we note that very large-scale sequences might present more challenges, leading to significant under-utilization of the NeRF model's representational capability. This is primarily due to the need to normalize point clouds within a $[-1,1]^3$ cube. Furthermore, our algorithm faces the common challenge of NeRFs that it requires a relatively long training times.
