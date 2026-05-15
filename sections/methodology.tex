@@ -21,7 +21,7 @@ For any LiDAR ray denoted as $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, where $\mat
 \end{equation}
 where $\delta_n$ is the distance between neighboring samples, and $\hat{h}(z)$ is the predicted termination distribution of the ray.
 
-Given $S$ number of LiDAR scans of point clouds with their intensity values, and the initial estimates of their sensor poses $P = \{\mathbf{p}_s\}_{s=0}^S \subset SE(3)$, LiDAR NeRF-BA can be formulated as the following optimization problem:
+Given $S$ number of LiDAR scans of point clouds, and the initial estimates of their sensor poses $P = \{\mathbf{p}_s\}_{s=0}^S \subset SE(3)$, LiDAR NeRF-BA can be formulated as the following optimization problem:
 \begin{equation}\label{eq:NeLD_BA_problem_def}
 	\begin{split}
 		P^*, \Theta^* &=  \arg\min_{P, \Theta} \mathcal{L}(\hat{R} \mid R)
@@ -53,9 +53,7 @@ loss for optimization~\cite{lin2021barf,wang2022nerfmm,chen2023l2gnerf}, LiDAR N
 We have found that the density of volume sampling plays a critical role for LiDAR sensor pose optimization using range. As illustrated in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b), the estimated range is closely coupled to the volume sampling density. Specifically, dense volume samples are necessary to provide gradient signals for joint optimization of the NeRF model and the LiDAR poses. Notably, an accurate $\hat{R}$ does not imply an accurate $\mathbf{p}$; rather, an accurate $\mathbf{p}$ is explicitly defined by a dense volume sampling. 
 % Thus a sparse volume sampling along rays results in ambiguity for LiDAR sensor pose.
 
-
 With these insights in mind, we propose to first normalize the near and far planes for volume sampling to be within the $C = [-1,1]^3$ cube where possible. A near plane $z_n$ and a far plane $z_f$ are selected for volume sampling at $\mathbf{r}(z), z \in [z_n, z_f]$ with $[z_n, z_f]$ in $C$ for most rays.
-
 
 %As the termination distribution weight at coarse samples is conditioned on previous samples, fine sampling around positions only refines range estimation by half a bin at best.
 
@@ -80,7 +78,6 @@ $Z$ is either an interval $[c_n, c_f]$  with $c_n < c_f$, a singleton $\{c\}$ or
 \end{equation}
 Note that this bounding is only possible for point clouds as the 3D positions for points are provided, unlike images with a potentially unbounded scene. This bounding is most effective for rays with origin close to the scene boundary and pointing away from $[0,0,0]$.
 
-
 \begin{figure}
 	\centering
 	\includegraphics[width=0.48\textwidth]{images/ray_term_dist_comparison.png}
@@ -99,28 +96,9 @@ Positional encoding is the key for detailed scene reconstruction in both RGB NeR
 \end{align}
 where $\gamma_k(x) = \left[\cos\left(2^k \pi x\right), \sin\left(2^k \pi x\right)\right] \in \mathbb{R}^{2}$.
 
-
-% \begin{align}\label{eq:fourier_positional_encoding_0}
-% 	\gamma(\mathbf{x}) & = \left[\mathbf{x}, \gamma_0(\mathbf{x}), \gamma_1(\mathbf{x}), \dots, \gamma_{L-1}(\mathbf{x})\right] \in \mathbb{R}^{3 + 6L}
-% \end{align}
-% where $\gamma_k(\mathbf{x}) = \left[\cos\left(2^k \pi \mathbf{x}\right), \sin\left(2^k \pi \mathbf{x}\right)\right] \in \mathbb{R}^{6}$.
-
-% Older equation:
-% Where: 
-% \begin{align}\label{eq:fourier_positional_encoding_1}
-% 	\gamma_k(x) & = \left[\cos\left(2^k \pi x\right), \sin\left(2^k \pi x\right)\right] \in \mathbb{R}^{6}
-% \end{align}
-
 BARF \cite{lin2021barf} has achieved impressive RGB NeRF-BA results by gradually activating Fourier feature frequencies. This allows camera poses to be initially refined in a low-frequency radiance field, and then to learn the image details when the full spectrum is activated. For outdoor scenes, using high-frequency encoding is desired to ensure the reconstruction of scene details~\cite{martinbrualla2021nerfinwild}. Further increasing encoding frequency, however, results in a $2^k\pi$ amplification in the encoding gradient. This causes gradients in $\mathbf{p}$ to explode eventually, leading to difficult BA or causing $\mathbf{p}$ to escape from local minima. 
 
 Inspired by the successful use of \textit{surrogate gradient} to optimize spike-neural networks~\cite{Zenke2021surrogate}, the following surrogate gradient for Fourier positional encoding is proposed:
-% \begin{align}\label{eq:surrogate_fourier_gradient}
-% 	{\frac{\partial \gamma_k^\text{smooth}(x)}{\partial x}}
-% 	=
-	% \begin{bmatrix}
-	% 	- \sin(2^k \pi x) , \cos(2^k \pi x)
-	% \end{bmatrix}
-% \end{align}
 
 \begin{align}\label{eq:surrogate_fourier_gradient}
 	{\frac{\partial \gamma_k^\text{smooth}(x)}{\partial x}}
@@ -182,16 +160,13 @@ The normal positional encoding function in equation~\ref{eq:fourier_positional_e
 	\label{fig:raw_map_results}
 \end{figure*}
 
- 
-
 \subsection{Loss Functions}\label{sec:loss}
-To train the LiDAR NeRF-BA model, L1 and L2 losses are used on the rendered range and intensity of the coarse and fine rendered ranges, respectively:
+To train the LiDAR NeRF-BA model, the L1 loss was used on the rendered range of the coarse and fine rendered ranges:
 % --- equation here ---
 \begin{align}\label{eq:depth_intensity_loss}
-	\mathcal{L}_\text{range}  = \sum_\mathbf{r}\left\| \hat{R}(\mathbf{r}) - R(\mathbf{r}) \right\|_1 \\
-	\mathcal{L}_\text{intensity} = \sum_\mathbf{r}\left\| \hat{I}(\mathbf{r}) - I(\mathbf{r}) \right\|_2^2
+	\mathcal{L}_\text{range}  = \sum_\mathbf{r}\left\| \hat{R}(\mathbf{r}) - R(\mathbf{r}) \right\|_1
 \end{align}
-The distribution loss in DS-NeRF~\cite{deng2024dsnerf} is also used for ray termination distribution in coarse estimation, which is the KL divergence loss for comparing the estimated termination distribution $\hat{h}(z)$ against a targeted distribution $h^*(z)$:
+The distribution loss in DS-NeRF~\cite{deng2024dsnerf} is also used for ray termination distribution in coarse estimation, which is the KL divergence loss for comparing the estimated termination distribution $\hat{h}(z)$ against a targeted termination distribution $h^*(z)$:
 % --- equation here ---
 \begin{align}\label{eq:termination_distribution_loss}
 	\mathcal{L}_\text{termination} = \sum_\mathbf{r}\sum_{n=1}^N h^*(z_n) \cdot ln\left(\frac{\hat{h}(z_n)}{h^*(z_n)}\right)
@@ -214,10 +189,8 @@ Our final loss function $\mathcal{L}$ is:
 \mathcal{L} 
 &= \lambda_\text{coarse} \cdot 
    \bigl(\lambda_d \mathcal{L}_\text{range}^c 
-       + \lambda_i \mathcal{L}_\text{intensity}^c 
        + \lambda_h \mathcal{L}_\text{termination}^c \bigr) \notag \\
 &\quad + (\lambda_d \mathcal{L}_\text{range}^f
-       + \lambda_i \mathcal{L}_\text{intensity}^f
        + \lambda_h \mathcal{L}_\text{termination}^f)
 \label{eq:final_loss}
 \end{align}
