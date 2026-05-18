@@ -1,3 +1,12 @@
+Run project with:
+```bash
+latexmk -pdf root.tex
+```
+Clean the compiler with:
+```
+latexmk -C root.tex
+```
+
 ### TODO
 
 #### Figures
