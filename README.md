@@ -8,10 +8,16 @@ latexmk -C root.tex
 ```
 
 ### TODO
+- Use topdown map for math hard
+- Maybe add error histogram
+- use 20cm threshold for rendered map, align with other papers
+- mention newer college problem that is mentioned in other papers
+- combine reference
+
+
+
 
 #### Figures
-8. Put architecture / quick result image in first page
-34. Add red box in images
 <!-- 19. Add zoomin for rendered maps -->
 
 #### Text
@@ -27,6 +33,8 @@ latexmk -C root.tex
 2. Make video
 
 #### Done
+34. Add red box in images __ok__
+8. Put architecture / quick result image in first page __ok__
 1. Add figure in first page, what figure would be a good idea to put into the first page? - __ok__
 1. Update traj plot with arrows showing direction, make line thicker - __ok__
 4. Add more evaluation metrics in mapping results - __ok__
