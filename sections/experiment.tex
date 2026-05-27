@@ -162,7 +162,7 @@ To quantitatively assess map quality, we employed the L1-Chamfer distance (L1-CD
 \subsection{Reconstruction and Mapping Evaluation}\label{sec:pcd_plot_map}
 
 \paragraph{Raw Point Cloud Map Evaluation}
-As shown in Table~\ref{tab:pcd_plotting_cd-eval}, our method substantially reduces the L1-Chamfer distance of raw maps when initialized with FAST-LIO2 poses, outperforming HBA and demonstrating strong improvements over the initial pose estimates. In contrast, HBA often fails to register point clouds effectively, likely due to its sensitivity to initialization. Interestingly, raw maps generated using ground truth poses yields a relatively higher L1-Chamfer distances for several Newer College sequences, suggesting that the provided ground truth poses are not perfectly accurate and may introduce additional misalignments. Qualitative results are shown in Figure~\ref{fig:raw_map_results}. Across sequences with both favorable initializations (e.g., quad\_easy) and challenging ones with poor initial poses (e.g., canteen\_day or math\_hard), our method consistently produces more coherent and structurally faithful raw maps compared to HBA.
+As shown in Table~\ref{tab:pcd_plotting_cd-eval}, our method substantially reduces the L1-Chamfer distance of raw maps when initialized with FAST-LIO2 poses, outperforming HBA and BALM. In contrast, HBA often fails to register point clouds effectively, while BALM failed to handle outlier frames. Interestingly, raw maps generated using ground truth poses yields a relatively higher L1-Chamfer distances for several Newer College sequences, suggesting that the provided ground truth poses are not perfectly accurate and may introduce additional misalignments. Qualitative results are shown in Figure~\ref{fig:raw_map_results}. Across sequences with both favorable initializations (e.g., quad\_easy) and challenging ones with poor initial poses (e.g., canteen\_day or math\_hard), our method consistently produces more coherent and structurally faithful raw maps compared to HBA.
 
 
 \paragraph{Rendered Map Evaluation}
@@ -339,6 +339,22 @@ Table~\ref{tab:rendered_map} shows the qualitative results for rendered maps. Ou
  }
 \end{table*}
 
+% --- Trajectory Qualitative Result
+\begin{figure*}[!t]
+	\centering
+	\renewcommand{\arraystretch}{1.0}
+	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}&
+		\includegraphics[height=0.21\textwidth]{images/traj/canteen_day.png}    &
+		\includegraphics[height=0.21\textwidth]{images/traj/canteen_night.png} &
+		\includegraphics[height=0.21\textwidth]{images/traj/garden_day.png}& 
+		\includegraphics[height=0.21\textwidth]{images/traj/garden_night.png}\\
+		& \small canteen\_day & \small canteen\_night & \small garden\_day & \small garden\_night\\
+	\end{tabular}
+	\caption{\textbf{Qualitative Results for Trajectory for FusionPortable Sequences.} Circle markers represent the start of trajectories, cross markers represent the end of trajectories. }
+	\label{fig:trajectory_result}
+	\vspace{-15pt}
+\end{figure*}
+
 \subsection{Trajectory Evaluation}
 % --- ATE quantitative result (No Newer College)
 \begin{table}
@@ -369,11 +385,16 @@ Table~\ref{tab:rendered_map} shows the qualitative results for rendered maps. Ou
 			0.085 &      % canteen_night
 			0.118 &      % garden_day
 			0.126 \\     % garden_night
+		BALM~\cite{liu2021balm} &
+			\underline{0.062} &      % canteen_day
+			\underline{0.066} &      % canteen_night
+			\textbf{0.037} &      % garden_day
+			\textbf{0.037} \\     % garden_night
 		NeLD-BA (Ours) &
-			\textbf{0.064} & % canteen_day
-			\textbf{0.071} & % canteen_night
-			\textbf{0.044} & % garden_day
-			\textbf{0.043} \\ % garden_night
+			\textbf{0.053} & % canteen_day
+			\textbf{0.061} & % canteen_night
+			\underline{0.043} & % garden_day
+			\underline{0.043} \\ % garden_night
 		\midrule
 		FAST-LIO2~\cite{xu2021fastlio2} &
 			0.070 &      % canteen_day
@@ -383,30 +404,11 @@ Table~\ref{tab:rendered_map} shows the qualitative results for rendered maps. Ou
 		\bottomrule
 	\end{tabular}
 	{\captionsetup{justification=raggedright,singlelinecheck=false}
- 	\caption*{\small The best results are highlighted in \textbf{bold}.}}
-    \vspace{-20pt}
+ 	\caption*{\small The best results are highlighted in \textbf{bold}. the second-best results are \underline{underlined}.}}
+	\vspace{-20pt}
 \end{table}
 
-% --- Trajectory Qualitative Result
-\begin{figure*}[!t]
-	\label{fig:trajectory_result}
-	\centering
-	\renewcommand{\arraystretch}{1.0}
-	\begin{tabular}{@{}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{\hskip 2pt}c@{}}&
-		\includegraphics[height=0.21\textwidth]{images/traj/canteen_day.png}    &
-		\includegraphics[height=0.21\textwidth]{images/traj/canteen_night.png} &
-		\includegraphics[height=0.21\textwidth]{images/traj/garden_day.png}& 
-		\includegraphics[height=0.21\textwidth]{images/traj/garden_night.png}\\
-		& \small canteen\_day & \small canteen\_night & \small garden\_day & \small garden\_night\\
-	\end{tabular}
-	\caption{\textbf{Qualitative Results for Trajectory for FusionPortable Sequences.} Circle markers represent the start of trajectories, cross markers represent the end of trajectories. }
-    \vspace{-10pt}
-\end{figure*}
-
-We also evaluate the optimized pose with ATE. The quantitative and qualitative results are shown in Table~\ref{tab:ate-eval} and Figure~\ref{fig:trajectory_result}. Both deep learning approaches, GeoTrans and SGHR, have failed to achieve a reasonable trajectory estimates, as the pre-trained models struggle to generalize to outdoor scenes. HBA provides minimal improvement from the initial FAST-LIO2 poses, while our method has achieved a near ground truth trajectory for FusionPortable sequences. Due to the potentially imperfect ground truth pose for Newer College sequences as discussed in Section~\ref{sec:pcd_plot_map}, trajectory evaluation for Newer College sequences is not provided.
-
-\subsection{Ablation Study}
-Ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}.
+We also evaluate the optimized pose with ATE. The quantitative and qualitative results are shown in Table~\ref{tab:ate-eval} and Figure~\ref{fig:trajectory_result}. Both deep learning approaches, SGHR have failed to achieve a reasonable trajectory estimate as the pre-trained models struggle to generalize to outdoor scenes. GeoTrans have achieved a more reasonable result, but still underperforms. HBA provides inverse result from the initial FAST-LIO2 poses, while BALM and our method has achieved a near ground truth trajectory for FusionPortable sequences. Due to the potentially imperfect ground truth pose for Newer College sequences as discussed in Section~\ref{sec:pcd_plot_map}, trajectory evaluation for Newer College sequences is not provided.
 
 \begin{table}
 	\caption{Ablation Study on L1-Chamfer Distance of Raw Point Cloud Maps [cm]}
@@ -450,7 +452,10 @@ Ablation study was conducted across three challenging sequences to validate our 
 	\end{tabular}
 	{\captionsetup{justification=raggedright,singlelinecheck=false}
  	\caption*{\small The best results are highlighted in \textbf{bold}.}}
+  	% \vspace{-10pt}
 \end{table}
+
+% -- figure for ablation study
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.49\linewidth}
@@ -463,7 +468,11 @@ Ablation study was conducted across three challenging sequences to validate our 
   \end{subfigure}
   \caption{\textbf{Ablation Study Qualitative Results.} NeRF's~\cite{mildenhall2020nerfOG} sampling method result in an outlier frame (left) while our method successfully registered the outlier frame (right).}
   \label{fig:ablation_qualitative_result}
+  \vspace{-20pt}
 \end{figure}
-\vspace{-10pt}
+\subsection{Ablation Study}
+Ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}.
+
+
 \subsection{Limitations}
 While our algorithm has demonstrated superior capabilities in mapping and BA for scenes, we note that very large-scale sequences might present more challenges, leading to significant under-utilization of the NeRF model's representational capability. This is primarily due to the need to normalize point clouds within a $[-1,1]^3$ cube. Furthermore, our algorithm faces the common challenge of NeRFs that it requires a relatively long training times.
