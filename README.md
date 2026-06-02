@@ -8,31 +8,22 @@ latexmk -C root.tex
 ```
 
 ### TODO
-- Use topdown map for math hard
-- Maybe add error histogram
-- use 20cm threshold for rendered map, align with other papers
-- mention newer college problem that is mentioned in other papers
-- combine reference
-
-
-
+- update video
 
 #### Figures
-<!-- 19. Add zoomin for rendered maps -->
 
 #### Text
 30. Proofread the entire thing with correction notes
-<!-- 31. Include even more contents in introduction -->
-32. Perhaps move point cloud voxel downsampling and pcd normalization into implementation detail
-35. Update evaluation metrics description, and add justification
-36. Update trajectory figures, they are still very difficult to see.
-
 
 #### Others
-1. Make a name for this paper?
-2. Make video
 
 #### Done
+- Maybe add error histogram __ok__
+- mention newer college problem that is mentioned in other papers __ok__
+- use 20cm threshold for rendered map, align with other papers __ok__
+2. Make video __ok__
+1. Make a name for this paper? __ok__
+- Use topdown map for math hard __ok__
 34. Add red box in images __ok__
 8. Put architecture / quick result image in first page __ok__
 1. Add figure in first page, what figure would be a good idea to put into the first page? - __ok__
