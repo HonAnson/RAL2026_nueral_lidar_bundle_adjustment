@@ -80,9 +80,10 @@ Note that this bounding is only possible for point clouds as the 3D positions fo
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.48\textwidth]{images/ray_term_dist_comparison.png}
-	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray.} 8192 uniform volume samples from a LiDAR ray of a scan in the Newer College dataset are used to statistically reconstruct the ground truth ray termination distribution. It can be seen that our method better approximates the ground truth ray termination distribution, which is critical for providing accurate gradients for training LiDAR NeRF-BA.}
+	\includegraphics[width=0.48\textwidth]{images/ray_term_dist_comparison_upscaled_4x.png}
+	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray.} 8192 uniform volume samples from a LiDAR ray in quad\_hard sequence are used to statistically reconstruct the ground truth ray termination distribution. It can be seen that our sampling method better approximates the ground truth ray termination distribution, which is critical for providing accurate gradients in LiDAR NeRF-BA.}
 	\label{fig:ray_termination_dist_comparison}
+	\vspace{-15pt}
 \end{figure}
 
 Second, the vanilla hierarchical sampling strategy is sub-optimal for improving range estimation accuracy. In the original NeRF approach, fine samples were placed in a bin around coarse samples, guided by weights derived from the coarse termination distribution \cite{mildenhall2020nerfOG}, as shown in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). However, this strategy does not effectively resolve sensor pose ambiguity along the ray direction. In particular, fine samples placed after the coarse sample contribute little on removing the ambiguity in the sensor pose, as they fall beyond the region of highest sensitivity in the termination distribution.
@@ -129,12 +130,12 @@ The normal positional encoding function in equation~\ref{eq:fourier_positional_e
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/balm.png}    &
 			\includegraphics[width=0.18\textwidth]{images/raw_map/quad_hard/neld_ba.png} \\
 
-		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small math\_hard (NC)}}} &
-			\includegraphics[width=0.2\textwidth]{images/overview_map/math_hard.png} &
-			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/fastlio_initial.png} &
-			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/hba.png}&
-			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/balm.png}    &
-			\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/neld_ba.png} \\
+		% \rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small math\_hard (NC)}}} &
+		% 	\includegraphics[width=0.2\textwidth]{images/overview_map/math_hard.png} &
+		% 	\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/fastlio_initial.png} &
+		% 	\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/hba.png}&
+		% 	\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/balm.png}    &
+		% 	\includegraphics[width=0.18\textwidth]{images/raw_map/math_hard/neld_ba.png} \\
 
 		\rotatebox{90}{\parbox[c]{2cm}{\centering\textbf{\small canteen\_day (FP)}}} &
 			\includegraphics[width=0.2\textwidth]{images/overview_map/canteen_day.png} &

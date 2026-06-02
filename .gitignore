@@ -2,8 +2,9 @@
 root.pdf
 images/
 archive/
-IEEEtran_bst_HOWTO.pdf
-RAL2026_neural_lidar_bundle_adjustment.pdf
+*.pdf
+
+
 
 # LaTeX build files
 *.aux
