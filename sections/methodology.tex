@@ -38,7 +38,7 @@ where $D$ is the measured range from LiDAR sensors, and each $\mathbf{p}_s$ is p
 	\caption{\textbf{Comparison of RGB NeRF-BA and LiDAR NeRF-BA in Volume Sampling along Depth/Range.}
 		(a) In RGB NeRF-BA, depth is only \textit{implicitly} constrained via colors and multi-view geometry (orange rays), thus volume samples are loosely constrained. In contrast, LiDAR provides range measurements which require \textit{explicit} volume sampling to constrain. 
 		% (b) A small perturbation $\epsilon$ in the sensor pose $\mathbf{p}$ produces a similar ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending due to sparse sampling, which yields minimal gradient for pose refinement, hindering optimization.
-		(b) Sampling around high-probability spike in $\sigma(z)$ (highlighted pink region) is critical to produce a differnece in the ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending, which provides non-vanishing $\frac{\partial \hat{h}(z_i)}{\partial \mathbf{x}_i}$ for pose optimization.
+		(b) Sampling around sharp transition of $\sigma(z)$ (highlighted pink region) is critical to produce a differnece in the ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending, which provides non-vanishing $\frac{\partial \hat{h}(z_i)}{\partial \mathbf{x}_i}$ for pose optimization.
 		(c) NeRF \cite{mildenhall2020nerfOG} allocates fine samples \textit{around} coarse sample, which can miss the sharp transition of $\sigma(z)$ (highlighted pink region). We instead sample \textit{prior to} coarse samples, ensuring a dense sampling around the high-probability spike in $\sigma$, akin to a step function.}
 	\label{fig:rgb_nerf_ba_vs_lidar_nerf_ba}
 \end{figure*}
