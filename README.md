@@ -6,6 +6,11 @@ Clean the compiler with:
 ```
 latexmk -C root.tex
 ```
+Command to compress the pdf:
+```
+gs -sDEVICE=pdfwrite    -dCompatibilityLevel=1.5    -dPDFSETTINGS=/printer    -dNOPAUSE -dBATCH -dQUIET    -sOutputFile=root_compressed.pdf    root.pdf
+```
+
 
 ### TODO
 - update video
