@@ -3,6 +3,7 @@ root.pdf
 images/
 archive/
 *.pdf
+*.gz
 
 
 
