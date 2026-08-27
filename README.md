@@ -11,6 +11,39 @@ Command to compress the pdf:
 gs -sDEVICE=pdfwrite    -dCompatibilityLevel=1.5    -dPDFSETTINGS=/printer    -dNOPAUSE -dBATCH -dQUIET    -sOutputFile=root_compressed.pdf    root.pdf
 ```
 
+### Build the arXiv submission tarball
+Produces `arxiv_submission.tar.gz` containing only the source arXiv needs
+(`root.tex`, `sections/*.tex`, `ieeeconf.cls`, `root.bbl`, and the figures actually
+referenced by `\includegraphics`). Prerequisites already in `root.tex`: `\pdfoutput=1`
+as the first line and the de-anonymized `\author` block. Requires `IEEEtran.bst` +
+`IEEEabrv.bib` (present in TeX Live) for the bibtex step.
+```bash
+# 1. Refresh the bibliography (.bbl) so arXiv needs no bibtex run
+pdflatex -interaction=nonstopmode root.tex
+bibtex root
+pdflatex -interaction=nonstopmode root.tex
+pdflatex -interaction=nonstopmode root.tex
+
+# 2. Stage only the files arXiv needs (source + used figures)
+STAGE=arxiv_stage
+rm -rf "$STAGE" && mkdir -p "$STAGE/sections"
+cp root.tex ieeeconf.cls root.bbl "$STAGE/"
+cp sections/*.tex "$STAGE/sections/"
+# copy only the images referenced by \includegraphics, preserving paths
+grep -rhoE 'includegraphics(\[[^]]*\])?\{[^}]*\}' sections/ root.tex \
+  | sed -E 's/.*\{([^}]*)\}/\1/' | sort -u \
+  | while read -r f; do
+      [ -f "$f" ] || f="$f.png"
+      mkdir -p "$STAGE/$(dirname "$f")" && cp "$f" "$STAGE/$f"
+    done
+
+# 3. Create the tarball (arXiv unpacks from the archive root)
+tar -czf arxiv_submission.tar.gz -C "$STAGE" .
+rm -rf "$STAGE"
+```
+Upload `arxiv_submission.tar.gz` directly to arXiv (do not unzip it); it auto-detects
+`root.tex` as the main file and uses the bundled `root.bbl`.
+
 
 ### TODO
 - update video
