@@ -8,7 +8,8 @@ In general, a NeRF model can be formulated as:
 		\hat{\sigma} = f\left(\gamma\left(T(\mathbf{x};\mathbf{p})\right);\Theta\right)
 	\end{split}
 \end{equation}
-where $\hat{\sigma}$ is the estimated density. $T(\cdot)$ denotes the Euclidean transformation function that transforms a volume sample $\mathbf{x} \in \mathbb{R}^5$ by sensor pose $\mathbf{p} \subset SE(3)$. $\gamma(\cdot)$ is the positional encoding function, and $f(\cdot)$ is a multi-layer perceptron (MLP) with parameters $\Theta$, representing the NeRF model. 
+where $\hat{\sigma}$ is the estimated density. $T(\cdot)$ denotes the Euclidean transformation function that transforms a volume sample $\mathbf{x} \in \mathbb{R}^3$ by sensor pose $\mathbf{p} \subset SE(3)$. $\gamma(\cdot)$ is the positional encoding function, and $f(\cdot)$ is a multi-layer perceptron (MLP) with parameters $\Theta$, representing the NeRF model. 
+Note that the viewing direction in the original five-dimensional NeRF input~\cite{mildenhall2020nerfOG} affects only view-dependent radiance, not density. As our model predicts density alone, volume samples remain three-dimensional although we continue to refer to the model as a NeRF throughout this paper.
 
 For any LiDAR ray denoted as $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, where $\mathbf{o}$ and $\mathbf{u}$ are the ray's origin and direction, with $z \in \mathbb{R}_{>0}$ being the range along the LiDAR ray, an estimated range $\hat{D}$ from the NeRF model can be derived by the alpha compositing function of $N$ volume samples \cite{mildenhall2020nerfOG}:
 \begin{equation}\label{eq:alpha_compositing_part1}
