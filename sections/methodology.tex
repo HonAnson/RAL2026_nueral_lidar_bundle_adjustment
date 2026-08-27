@@ -67,36 +67,15 @@ Second, we notice that LiDAR rays often travel tens of meters into empty space, 
 z_n = \max(z_\text{low},\, c_n), \qquad
 z_f = \min(z_\text{up},\, c_f),
 \end{equation}
-% For a ray $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, the near range $c_n$ and far range $c_f$ of the intersections are given to be:
-% \begin{equation}\label{eq:slab_intersection}
-% c_n = \max_{d\in\{1,2,3\}} \frac{-1 - o_d}{u_d}, \qquad
-% c_f = \min_{d\in\{1,2,3\}} \frac{1 - o_d}{u_d},
-% \end{equation}
-% where $o_d$ and $u_d$ are the $d$-th components of the ray origin $\mathbf{o}$ and direction $\mathbf{u}$, and the two terms of an axis are swapped when $u_d < 0$. The ray intersects $C$ when $c_n < c_f$ and $c_f > 0$.
-
 with a fallback to $[z_n, z_f] = [z_\text{low}, z_\text{up}]$ when the ray does not intersect $C$. Note that this bounding is only possible for point clouds, where the 3D positions of points are provided, unlike images with a potentially unbounded scene. It is most effective for rays whose origin is close to the scene boundary and points away from $[0,0,0]$, and significantly improves the overall volume sampling density.
-
-% With fall back to $[z_n, z_f] = [z_\text{low}, z_\text{up}]$ when the ray does not intersect $C$, an illustration is shown in Figure~\ref{fig:cube_bound}. Note that this bounding is only possible for point clouds, where the 3D positions of points are provided, unlike images with a potentially unbounded scene. It is most effective for rays whose origin is close to the scene boundary and points away from $[0,0,0]$, and significantly improves the overall volume sampling density.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.47\textwidth]{images/ray_term_dist_comparison_3.png}
-	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray in canteen\_day sequence} Our sampling method better approximates the baseline shifted distribution ($\epsilon=0.01$) constructed with 8192 uniform samples, which is critical for providing accurate gradients in LiDAR NeRF-BA.}
+	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray in canteen\_day sequence} Our sampling method better approximates the baseline distribution constructed with 8192 uniform samples when shifted ($\epsilon=0.01$), which is critical for providing accurate gradients in LiDAR NeRF-BA.}
 	\label{fig:ray_termination_dist_comparison}
 	\vspace{-15pt}
 \end{figure}
-
-% \begin{figure}
-% 	\centering
-% 	\includegraphics[width=0.25\textwidth]{images/cube_bound.png}
-% 	\caption{\textbf{2D illustration of Cube Bounded Sampling} The sampling interval is bounded for A: sensor poses outside the cube, and B: sensor poses inside the cube and C: ray does not intersect the cube.}
-% 	\label{fig:cube_bound}
-% 	\vspace{-15pt}
-% \end{figure}
-
-% Second, the vanilla hierarchical sampling strategy is sub-optimal for improving range estimation accuracy. In the original NeRF approach, fine samples were placed in a bin \textit{around} coarse samples, guided by weights derived from the coarse termination distribution \cite{mildenhall2020nerfOG}, as shown in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). However, fine samples placed after high density coarse sample contribute little in removing the sensor pose ambiguity as discussed. 
-
-% Thus, we propose to place fine samples at volumes \textit{before} coarse samples, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba} (c). This fully utilizes the fine samples and eliminates range ambiguity in both LiDAR NeRF-BA and mapping as shown in Figure~\ref{fig:ray_termination_dist_comparison}.
 
 \subsection{On Fourier Positional Encoding}
 Positional encoding is key to detailed scene reconstruction in both RGB NeRF and LiDAR NeRF~\cite{mildenhall2020nerfOG}. The Fourier positional encoding function $\gamma(\cdot)$ for feature $x$ is \cite{tancik2020fourierfeatures}:
@@ -106,7 +85,6 @@ Positional encoding is key to detailed scene reconstruction in both RGB NeRF and
 where $\gamma_k(x) = \left[\cos\left(2^k \pi x\right), \sin\left(2^k \pi x\right)\right] \in \mathbb{R}^{2}$.
 
 There is, however, a $2^k\pi$ amplification in the encoding gradient that makes it difficult to optimize $\mathbf{p}$ and may drive $\mathbf{p}$ away from the global minimum. This is particularly important for the common outdoor use case of LiDAR scenes that uses high-frequency encoding for reconstructing scene details~\cite{martinbrualla2021nerfinwild}. Inspired by the successful use of \textit{surrogate gradient} to optimize spiking neural networks~\cite{Zenke2021surrogate}, the following surrogate gradient for Fourier positional encoding is proposed to handle this problem:
-% escaping through NeRF BA as gradients in volume samples will cancel out, which was addressed in BARF~\cite{lin2021barf}. While BARF achieved remarkable result against this problem by gradually activating Fourier feature frequencies, the typical outdoor use case of LiDAR scenes that needs high-frequency encoding for reconstructing scene details~\cite{martinbrualla2021nerfinwild} faces another problem that the $2^k\pi$ amplification will not just cancel gradients among samples, but also lead to $\mathbf{p}$ escaping from the global minima.
 
 \begin{align}\label{eq:surrogate_fourier_gradient}
 	{\frac{\partial \gamma_k^\text{smooth}(x)}{\partial x}}
