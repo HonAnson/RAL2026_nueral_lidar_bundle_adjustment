@@ -22,10 +22,10 @@ For any LiDAR ray denoted as $\mathbf{r}(z)=\mathbf{o}+z\mathbf{u}$, where $\mat
 where $\delta_i$ is the distance between neighboring samples, and $\hat{h}(z)$ is the predicted termination distribution of the ray.
 
 Given $S$ number of LiDAR scans of point clouds, and the initial estimates of their sensor poses $P = \{\mathbf{p}_s\}_{s=0}^S$, LiDAR NeRF-BA can be formulated as the following optimization problem:
+
 \begin{equation}\label{eq:NeLD_BA_problem_def}
-	\begin{split}
-		P^*, \Theta^* &=  \arg\min_{P, \Theta} \mathcal{L}(\hat{D} \mid D)
-	\end{split}
+	P^*, \Theta^* = \operatorname*{arg\,min}_{P,\,\Theta}\;
+	\mathcal{L}\!\left(\hat{D}(P, \Theta),\; D\right)
 \end{equation}
 where $D$ is the measured range from LiDAR sensors, and each $\mathbf{p}_s$ is parameterized as the Lie algebra $se(3)$ of $SE(3)$. The optimization goal is to find the set of optimal sensor poses $P^*$ and MLP parameters $\Theta^*$ that minimize a chosen loss function $\mathcal{L}$ (see Section \ref{sec:loss}). 
 
@@ -37,8 +37,7 @@ where $D$ is the measured range from LiDAR sensors, and each $\mathbf{p}_s$ is p
 	\includegraphics[width=0.9\textwidth]{images/rgb_nerf_ba_vs_lidar_nerf_ba_5.png}
 	\caption{\textbf{Comparison of RGB NeRF-BA and LiDAR NeRF-BA in Volume Sampling along Depth/Range.}
 		(a) In RGB NeRF-BA, depth is only \textit{implicitly} constrained via colors and multi-view geometry (orange rays), thus volume samples are loosely constrained. In contrast, LiDAR provides range measurements which require \textit{explicit} volume sampling to constrain. 
-		% (b) A small perturbation $\epsilon$ in the sensor pose $\mathbf{p}$ produces a similar ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending due to sparse sampling, which yields minimal gradient for pose refinement, hindering optimization.
-		(b) Sampling around the sharp transition of $\sigma(z)$ (highlighted pink region) is critical to produce a difference in the ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending, which provides non-vanishing $\frac{\partial \hat{h}(z_i)}{\partial \mathbf{x}_i}$ for pose optimization.
+		(b) Sampling around the sharp transition of $\sigma(z)$ (pink region) is critical to produce a difference in the ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending, which provides non-vanishing $\frac{\partial \hat{h}(z_i)}{\partial T(\mathbf{x}_j; \mathbf{p})}$ for pose optimization.
 		(c) NeRF \cite{mildenhall2020nerfOG} allocates fine samples \textit{around} coarse samples, which can miss the sharp transition of $\sigma(z)$ (highlighted pink region). We instead sample \textit{prior to} coarse samples, ensuring a dense sampling around the high-probability spike in $\sigma$, akin to a step function.}
 	\label{fig:rgb_nerf_ba_vs_lidar_nerf_ba}
 \end{figure*}
@@ -51,12 +50,13 @@ This motivates us to consider the gradient of the estimated range $\hat{D}$ with
 \begin{equation}\label{eq:range_gradient}
 \frac{\partial \hat{D}}{\partial \mathbf{p}}
 =
-\sum_i z_i
-\frac{\partial \hat{h}(z_i)}{\partial \mathbf{x}_i}
-\frac{\partial T(\mathbf{x}_i; \mathbf{p})}{\partial \mathbf{p}}
+\sum_{i=1}^{N} z_i
+\sum_{j=1}^{i}
+\frac{\partial \hat{h}(z_i)}{\partial T(\mathbf{x}_j; \mathbf{p})}
+\frac{\partial T(\mathbf{x}_j; \mathbf{p})}{\partial \mathbf{p}}
 \end{equation}
 
-We have found that the density of volume sampling, i.e., the number of samples per unit length along the ray, is essential for ensuring the $\frac{\partial \hat{h}(z_i)}{\partial \mathbf{x}_i}$ term does not vanish, as illustrated in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b). We address this through two modifications to volume sampling. 
+We have found that the density of volume sampling, i.e., the number of samples per unit length along the ray, is essential for ensuring the $\frac{\partial \hat{h}(z_i)}{\partial T(\mathbf{x}_j; \mathbf{p})}$ terms do not vanish, as illustrated in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b). We address this through two modifications to volume sampling. 
 
 First, note that the vanilla hierarchical sampling strategy~\cite{mildenhall2020nerfOG} is sub-optimal for providing gradients for optimising $\mathbf{p}$. In the vanilla approach, fine samples were placed in a bin \textit{around} coarse samples, guided by weights derived from the coarse termination distribution, as shown in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). Notably, the sum in equation \ref{eq:range_gradient} is typically dominated by the first sample after the $\sigma$ spike, and samples after it contribute little to the sum due to alpha blending. Thus, we propose to place fine samples at volumes \textit{before} coarse samples, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba} (c). This fully utilizes the fine samples and significantly eliminates the estimated range ambiguity, as shown in Figure~\ref{fig:ray_termination_dist_comparison} with an actual LiDAR ray. 
 
@@ -174,10 +174,10 @@ To train the LiDAR NeRF-BA model, the L1 loss was used on both the coarse and fi
 \begin{align}\label{eq:depth_intensity_loss}
 	\mathcal{L}_\text{range}  = \sum_\mathbf{r}\left\| \hat{D}(\mathbf{r}) - D(\mathbf{r}) \right\|_1
 \end{align}
-The distribution loss in DS-NeRF~\cite{deng2024dsnerf} is also used for ray termination distribution in coarse estimation, which is the KL divergence loss for comparing the estimated termination distribution $\hat{h}(z)$ against a targeted termination distribution $h^*(z)$:
+The distribution loss in DS-NeRF~\cite{deng2024dsnerf} is also used for ray termination distributions, which is the KL divergence loss for comparing the estimated termination distribution $\hat{h}(z)$ against a targeted termination distribution $h^*(z)$:
 % --- equation here ---
 \begin{align}\label{eq:termination_distribution_loss}
-	\mathcal{L}_\text{termination} = \sum_\mathbf{r}\sum_{n=1}^N h^*(z_n) \cdot ln\left(\frac{\hat{h}(z_n)}{h^*(z_n)}\right)
+	\mathcal{L}_\text{termination} = \sum_\mathbf{r}\sum_{n=1}^N h^*(z_n) \cdot ln\left(\frac{h^*(z_n)}{\hat{h}(z_n)}\right)
 \end{align}
 While DS-NeRF modeled the target termination distribution as a Gaussian distribution with a small variance, we leverage the fact that range is provided in LiDAR measurements and propose a pseudo Dirac delta function as the targeted termination distribution. This effectively enforces that the ray termination probability in the first sample after ray termination is 1:
 % --- equation here ---
@@ -207,7 +207,9 @@ where superscripts $c$ and $f$ denote loss functions for coarse and fine estimat
 A rendered 3D map can be built by casting rays from the optimized sensor poses with the original ray directions in LiDAR frames. Using the same hierarchical sampling strategy mentioned above, the termination distances $z_\text{map}$ of rays are determined to be at the position of the highest termination probability per unit length:
 \begin{align}
 	\label{eq:mapping_with_termination_density}
-	z_{\text{map}} = \arg\max_{i} \left( \frac{h(z_i)}{\delta_i} \right)
+	i^* = \arg\max_{i} \left( \frac{\hat{h}(z_i)}{\delta_i} \right),
+	\qquad
+	z_{\text{map}} = z_{i^*}
 \end{align}
 Finally, we combine points at $\mathbf{r}(z_\text{map})$ from all frames to create a rendered map.
 

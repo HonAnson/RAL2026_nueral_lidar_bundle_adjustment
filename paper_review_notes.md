@@ -7,6 +7,10 @@ author decision (wording, notation, or content), not a mechanical fix.
 
 Line numbers refer to the state of the files after the grammar pass.
 
+Sections 1-5 come from the proofreading pass; sections 6-7 come from a
+follow-up review of the mathematics. **Section 6 is the highest priority** --
+it contains two items that are wrong, not merely unclear.
+
 ---
 
 ## 1. Likely factual / content errors
@@ -101,3 +105,80 @@ Line numbers refer to the state of the files after the grammar pass.
   still contain the original errors (e.g. `sections/experiment.tex:157`,
   `sections/methodology.tex:96-98`, `sections/conclusion.tex`). Harmless for the
   build, but worth clearing before release so the wrong version is not revived.
+
+---
+
+# Mathematical Review (added 2026-08-27)
+
+## 6. Probable errors in the equations (highest priority)
+
+- **Eq. (10), `sections/methodology.tex:180` -- the KL divergence is inverted.**
+  As written,
+  $\mathcal{L}_\text{termination} = \sum_\mathbf{r}\sum_n h^*(z_n)\ln\!\big(\hat{h}(z_n)/h^*(z_n)\big)$,
+  but $D_\text{KL}(h^*\Vert\hat{h}) = \sum h^*\ln(h^*/\hat{h})$ -- the ratio is the
+  wrong way round, so the expression equals $-D_\text{KL}$. Substituting the
+  one-hot $h^*$ of Eq. (11) gives $\mathcal{L}_\text{termination} = \ln\hat{h}(z_{n^*})$,
+  and minimizing it drives the termination probability at the correct bin to *zero*.
+  Swap the ratio (or negate the sum). **Check against the implementation** -- the
+  code is presumably correct and this is a transcription error.
+  Two follow-ons once fixed: with a one-hot target the loss reduces to
+  $-\ln\hat{h}(z_{n^*})$, which is worth stating explicitly, and the $0\ln 0$ terms
+  need the usual "by convention $0\ln 0 = 0$" remark.
+
+- **Eq. (5), `sections/methodology.tex:51-57` -- the chain rule is incomplete.**
+  $\hat{h}(z_i)$ depends on *every* sample $j \le i$ through the accumulated
+  transmittance $\exp(-\sum_{j<i}\hat\sigma_j\delta_j)$, so
+  $\partial\hat{h}(z_i)/\partial\mathbf{x}_i$ is only one term of the true derivative.
+  It should read
+
+  $$\frac{\partial \hat{D}}{\partial \boldsymbol{\xi}}
+    = \sum_{i=1}^{N} z_i \sum_{j \le i}
+      \frac{\partial \hat{h}(z_i)}{\partial \tilde{\mathbf{x}}_j}
+      \frac{\partial T(\mathbf{x}_j;\mathbf{p})}{\partial \boldsymbol{\xi}}$$
+
+  Two smaller problems in the same equation: the first factor must be taken with
+  respect to the *transformed* sample $\tilde{\mathbf{x}}_j = T(\mathbf{x}_j;\mathbf{p})$
+  (as written, $\mathbf{x}_i$ is simultaneously the input to $T$ and the variable
+  being differentiated), and $\partial/\partial\mathbf{p}$ with $\mathbf{p}\in SE(3)$
+  should be $\partial/\partial\boldsymbol{\xi}$ on the $\mathfrak{se}(3)$ coordinates
+  that are actually optimized. The $\sum_i$ has also lost its bounds, unlike
+  Eqs. (2)-(3). The same partial appears in the Fig. 2(b) caption and at
+  `sections/methodology.tex:59`.
+
+- **Eq. (13), `sections/methodology.tex:210` -- returns an index, not a distance.**
+  $z_\text{map} = \arg\max_i(h(z_i)/\delta_i)$ evaluates to $i^*$. Write
+  $i^* = \arg\max_i(\cdot)$ and $z_\text{map} = z_{i^*}$. Also $h$ appears without
+  its hat here, unlike everywhere else.
+
+## 7. Eq. (4): the reviewer's complaint about the arg-min
+
+The objective $\mathcal{L}(\hat{D} \mid D)$ contains neither $P$ nor $\Theta$, so the
+$\arg\min$ has no visible argument. The `|` also reads as a conditional probability
+rather than "prediction vs. measurement". Recommended minimal fix -- thread the
+variables through $\hat{D}$ and use a comma:
+
+```latex
+\begin{equation}\label{eq:NeLD_BA_problem_def}
+	P^*, \Theta^* = \operatorname*{arg\,min}_{P,\,\Theta}\;
+	\mathcal{L}\!\left(\hat{D}(P, \Theta),\; D\right)
+\end{equation}
+```
+
+with matching arguments propagated into Eqs. (1) and (2)
+($\hat{\sigma}(\mathbf{x};\mathbf{p},\Theta)$ and $\hat{D}(\mathbf{r};\mathbf{p},\Theta)$),
+plus one sentence noting that $P$ enters through $T(\cdot)$ and $\Theta$ through
+$f(\cdot)$, which is what makes the problem jointly differentiable.
+
+A fully explicit alternative, $\sum_{s=1}^{S}\sum_{\mathbf{r}\in\mathcal{R}_s}
+\mathcal{L}(\hat{D}(\mathbf{r};\mathbf{p}_s,\Theta), D(\mathbf{r}))$, would require
+dropping $\sum_\mathbf{r}$ from Eqs. (9)-(10) and defining those losses per-ray,
+otherwise the ray sum is counted twice.
+
+Minor, same equation: the `\begin{split}` wrappers on Eqs. (1) and (4) are doing
+nothing (single line, no alignment) and can be removed.
+
+---
+
+*Sections 8 and 9 (undefined/under-specified quantities, and internal
+inconsistencies in the math) were reviewed by the author on 2026-08-27 and
+dismissed as acceptable as written; they have been removed from this list.*
