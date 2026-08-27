@@ -3,7 +3,7 @@ root.pdf
 images/
 archive/
 *.pdf
-
+*.gz
 
 
 # LaTeX build files
