@@ -1,0 +1,319 @@
+% =====================================================================
+% results.tex -- SINGLE SOURCE OF TRUTH FOR ALL EXPERIMENTAL NUMBERS
+%
+% Every numeric cell in the result tables, and every number quoted in the
+% prose, must come from this file via \res{namespace}{method}{sequence}.
+% Never type a result directly into a table or a sentence: a value that
+% appears in two places (e.g. NeLD-BA's raw-map L1-CD, which appears in
+% both Table I and the ablation Table IV) is stored once here, so the two
+% tables cannot drift apart.
+%
+% Bold / underline ranking stays in the tables, not here: it is a
+% presentation choice that differs per table, whereas the value is data.
+%
+% Usage:   \res{rawcd}{ours}{quadhard}          -> the number
+%          \textbf{\res{rawcd}{ours}{quadhard}} -> the number, ranked best
+%
+% A missing or mistyped key typesets a red ?? and emits
+% "MISSING RESULT" in the build log -- grep the log before submitting.
+% =====================================================================
+
+\makeatletter
+% \resdef{namespace}{method}{sequence}{value}
+\newcommand{\resdef}[4]{\expandafter\gdef\csname res@#1@#2@#3\endcsname{#4}}
+% \res{namespace}{method}{sequence}
+\newcommand{\res}[3]{%
+  \ifcsname res@#1@#2@#3\endcsname
+    \csname res@#1@#2@#3\endcsname
+  \else
+    \textcolor{red}{\textbf{??}}%
+    \PackageWarning{results}{MISSING RESULT: #1/#2/#3}%
+  \fi}
+\makeatother
+
+% Marker for "algorithm failed on this sequence".
+\newcommand{\resfail}{---}
+
+% ----------------------------------------------------------------------
+% Raw point cloud map, L1-Chamfer distance [cm]  (Table I + ablation Table IV)
+% ----------------------------------------------------------------------
+% FAST-LIO2 (initial)
+\resdef{rawcd}{fastlio2}{cloister}{41.45}
+\resdef{rawcd}{fastlio2}{matheasy}{34.74}
+\resdef{rawcd}{fastlio2}{mathhard}{37.70}
+\resdef{rawcd}{fastlio2}{quadeasy}{27.85}
+\resdef{rawcd}{fastlio2}{quadmid}{31.71}
+\resdef{rawcd}{fastlio2}{quadhard}{37.74}
+\resdef{rawcd}{fastlio2}{canteenday}{35.76}
+\resdef{rawcd}{fastlio2}{canteennight}{35.03}
+\resdef{rawcd}{fastlio2}{gardenday}{34.89}
+\resdef{rawcd}{fastlio2}{gardennight}{30.84}
+
+% HBA
+\resdef{rawcd}{hba}{cloister}{48.45}
+\resdef{rawcd}{hba}{matheasy}{34.74}
+\resdef{rawcd}{hba}{mathhard}{39.11}
+\resdef{rawcd}{hba}{quadeasy}{29.93}
+\resdef{rawcd}{hba}{quadmid}{38.54}
+\resdef{rawcd}{hba}{quadhard}{42.22}
+\resdef{rawcd}{hba}{canteenday}{35.67}
+\resdef{rawcd}{hba}{canteennight}{35.03}
+\resdef{rawcd}{hba}{gardenday}{36.11}
+\resdef{rawcd}{hba}{gardennight}{31.61}
+
+% BALM
+\resdef{rawcd}{balm}{cloister}{41.23}
+\resdef{rawcd}{balm}{matheasy}{34.02}
+\resdef{rawcd}{balm}{mathhard}{37.45}
+\resdef{rawcd}{balm}{quadeasy}{24.04}
+\resdef{rawcd}{balm}{quadmid}{27.00}
+\resdef{rawcd}{balm}{quadhard}{39.05}
+\resdef{rawcd}{balm}{canteenday}{34.58}
+\resdef{rawcd}{balm}{canteennight}{33.41}
+\resdef{rawcd}{balm}{gardenday}{30.70}
+\resdef{rawcd}{balm}{gardennight}{27.23}
+
+% Raw map w/ GT pose
+\resdef{rawcd}{gtpose}{cloister}{46.63}
+\resdef{rawcd}{gtpose}{matheasy}{33.34}
+\resdef{rawcd}{gtpose}{mathhard}{42.44}
+\resdef{rawcd}{gtpose}{quadeasy}{29.72}
+\resdef{rawcd}{gtpose}{quadmid}{34.11}
+\resdef{rawcd}{gtpose}{quadhard}{40.76}
+\resdef{rawcd}{gtpose}{canteenday}{36.29}
+\resdef{rawcd}{gtpose}{canteennight}{34.67}
+\resdef{rawcd}{gtpose}{gardenday}{31.63}
+\resdef{rawcd}{gtpose}{gardennight}{34.58}
+
+% Ablation: w/o Hier. Sampling, w/o Cube Bound
+\resdef{rawcd}{ablnohiernocube}{mathhard}{67.8}
+\resdef{rawcd}{ablnohiernocube}{quadhard}{65.3}
+\resdef{rawcd}{ablnohiernocube}{canteenday}{43.0}
+
+% Ablation: w/o Hier. Sampling
+\resdef{rawcd}{ablnohier}{mathhard}{48.9}
+\resdef{rawcd}{ablnohier}{quadhard}{32.9}
+\resdef{rawcd}{ablnohier}{canteenday}{37.9}
+
+% Ablation: w/o Termination Loss
+\resdef{rawcd}{ablnoterm}{mathhard}{44.6}
+\resdef{rawcd}{ablnoterm}{quadhard}{46.6}
+\resdef{rawcd}{ablnoterm}{canteenday}{43.8}
+
+% Ablation: w/o Surrogate Grad
+\resdef{rawcd}{ablnosurrogate}{mathhard}{54.8}
+\resdef{rawcd}{ablnosurrogate}{quadhard}{40.1}
+\resdef{rawcd}{ablnosurrogate}{canteenday}{59.7}
+
+% Ablation: Ours w/ NeRF Hier. Sampling
+\resdef{rawcd}{ablnerfhier}{mathhard}{37.3}
+\resdef{rawcd}{ablnerfhier}{quadhard}{31.7}
+\resdef{rawcd}{ablnerfhier}{canteenday}{34.8}
+
+% NeLD-BA (Ours)
+\resdef{rawcd}{ours}{cloister}{43.84}
+\resdef{rawcd}{ours}{matheasy}{34.16}
+\resdef{rawcd}{ours}{mathhard}{34.9}
+\resdef{rawcd}{ours}{quadeasy}{23.80}
+\resdef{rawcd}{ours}{quadmid}{26.19}
+\resdef{rawcd}{ours}{quadhard}{29.6}
+\resdef{rawcd}{ours}{canteenday}{34.5}
+\resdef{rawcd}{ours}{canteennight}{33.12}
+\resdef{rawcd}{ours}{gardenday}{30.44}
+\resdef{rawcd}{ours}{gardennight}{26.92}
+
+
+% ----------------------------------------------------------------------
+% Rendered map, L1-Chamfer distance [cm]  (Table II)
+% ----------------------------------------------------------------------
+% PIN-SLAM
+\resdef{rendcd}{pinslam}{cloister}{17.14}
+\resdef{rendcd}{pinslam}{matheasy}{16.89}
+\resdef{rendcd}{pinslam}{mathhard}{\resfail}
+\resdef{rendcd}{pinslam}{quadeasy}{17.21}
+\resdef{rendcd}{pinslam}{quadmid}{16.49}
+\resdef{rendcd}{pinslam}{quadhard}{17.27}
+\resdef{rendcd}{pinslam}{canteenday}{14.18}
+\resdef{rendcd}{pinslam}{canteennight}{13.63}
+\resdef{rendcd}{pinslam}{gardenday}{15.66}
+\resdef{rendcd}{pinslam}{gardennight}{16.07}
+
+% SHINE-Mapping
+\resdef{rendcd}{shine}{cloister}{16.31}
+\resdef{rendcd}{shine}{matheasy}{16.28}
+\resdef{rendcd}{shine}{mathhard}{15.88}
+\resdef{rendcd}{shine}{quadeasy}{14.23}
+\resdef{rendcd}{shine}{quadmid}{15.48}
+\resdef{rendcd}{shine}{quadhard}{16.30}
+\resdef{rendcd}{shine}{canteenday}{13.21}
+\resdef{rendcd}{shine}{canteennight}{12.99}
+\resdef{rendcd}{shine}{gardenday}{14.96}
+\resdef{rendcd}{shine}{gardennight}{14.83}
+
+% 4dNDF
+\resdef{rendcd}{fourdndf}{cloister}{15.42}
+\resdef{rendcd}{fourdndf}{matheasy}{15.66}
+\resdef{rendcd}{fourdndf}{mathhard}{\resfail}
+\resdef{rendcd}{fourdndf}{quadeasy}{16.11}
+\resdef{rendcd}{fourdndf}{quadmid}{15.48}
+\resdef{rendcd}{fourdndf}{quadhard}{15.68}
+\resdef{rendcd}{fourdndf}{canteenday}{12.38}
+\resdef{rendcd}{fourdndf}{canteennight}{12.13}
+\resdef{rendcd}{fourdndf}{gardenday}{13.89}
+\resdef{rendcd}{fourdndf}{gardennight}{14.96}
+
+% NeLD-BA (Ours)
+\resdef{rendcd}{ours}{cloister}{15.56}
+\resdef{rendcd}{ours}{matheasy}{15.22}
+\resdef{rendcd}{ours}{mathhard}{15.88}
+\resdef{rendcd}{ours}{quadeasy}{11.97}
+\resdef{rendcd}{ours}{quadmid}{12.80}
+\resdef{rendcd}{ours}{quadhard}{15.47}
+\resdef{rendcd}{ours}{canteenday}{12.70}
+\resdef{rendcd}{ours}{canteennight}{12.36}
+\resdef{rendcd}{ours}{gardenday}{12.06}
+\resdef{rendcd}{ours}{gardennight}{12.36}
+
+
+% ----------------------------------------------------------------------
+% Rendered map, F1 score @ 20 cm [%]  (Table II)
+% ----------------------------------------------------------------------
+% PIN-SLAM
+\resdef{rendf1}{pinslam}{cloister}{56.1}
+\resdef{rendf1}{pinslam}{matheasy}{50.0}
+\resdef{rendf1}{pinslam}{mathhard}{\resfail}
+\resdef{rendf1}{pinslam}{quadeasy}{63.6}
+\resdef{rendf1}{pinslam}{quadmid}{41.3}
+\resdef{rendf1}{pinslam}{quadhard}{47.5}
+\resdef{rendf1}{pinslam}{canteenday}{34.5}
+\resdef{rendf1}{pinslam}{canteennight}{32.4}
+\resdef{rendf1}{pinslam}{gardenday}{55.6}
+\resdef{rendf1}{pinslam}{gardennight}{58.6}
+
+% SHINE-Mapping
+\resdef{rendf1}{shine}{cloister}{65.2}
+\resdef{rendf1}{shine}{matheasy}{71.8}
+\resdef{rendf1}{shine}{mathhard}{59.0}
+\resdef{rendf1}{shine}{quadeasy}{82.7}
+\resdef{rendf1}{shine}{quadmid}{73.2}
+\resdef{rendf1}{shine}{quadhard}{62.2}
+\resdef{rendf1}{shine}{canteenday}{52.6}
+\resdef{rendf1}{shine}{canteennight}{50.1}
+\resdef{rendf1}{shine}{gardenday}{65.3}
+\resdef{rendf1}{shine}{gardennight}{69.9}
+
+% 4dNDF
+\resdef{rendf1}{fourdndf}{cloister}{51.9}
+\resdef{rendf1}{fourdndf}{matheasy}{44.5}
+\resdef{rendf1}{fourdndf}{mathhard}{\resfail}
+\resdef{rendf1}{fourdndf}{quadeasy}{55.9}
+\resdef{rendf1}{fourdndf}{quadmid}{49.2}
+\resdef{rendf1}{fourdndf}{quadhard}{45.2}
+\resdef{rendf1}{fourdndf}{canteenday}{35.1}
+\resdef{rendf1}{fourdndf}{canteennight}{34.5}
+\resdef{rendf1}{fourdndf}{gardenday}{50.4}
+\resdef{rendf1}{fourdndf}{gardennight}{51.5}
+
+% NeLD-BA (Ours)
+\resdef{rendf1}{ours}{cloister}{59.0}
+\resdef{rendf1}{ours}{matheasy}{79.7}
+\resdef{rendf1}{ours}{mathhard}{77.7}
+\resdef{rendf1}{ours}{quadeasy}{89.6}
+\resdef{rendf1}{ours}{quadmid}{87.8}
+\resdef{rendf1}{ours}{quadhard}{82.5}
+\resdef{rendf1}{ours}{canteenday}{61.4}
+\resdef{rendf1}{ours}{canteennight}{60.0}
+\resdef{rendf1}{ours}{gardenday}{69.3}
+\resdef{rendf1}{ours}{gardennight}{73.8}
+
+
+% ----------------------------------------------------------------------
+% Rendered map, inlier RMSE [cm]  (Table II)
+% ----------------------------------------------------------------------
+% PIN-SLAM
+\resdef{rendrmse}{pinslam}{cloister}{7.73}
+\resdef{rendrmse}{pinslam}{matheasy}{6.32}
+\resdef{rendrmse}{pinslam}{mathhard}{\resfail}
+\resdef{rendrmse}{pinslam}{quadeasy}{6.53}
+\resdef{rendrmse}{pinslam}{quadmid}{5.83}
+\resdef{rendrmse}{pinslam}{quadhard}{6.39}
+\resdef{rendrmse}{pinslam}{canteenday}{5.34}
+\resdef{rendrmse}{pinslam}{canteennight}{5.17}
+\resdef{rendrmse}{pinslam}{gardenday}{5.99}
+\resdef{rendrmse}{pinslam}{gardennight}{6.07}
+
+% SHINE-Mapping
+\resdef{rendrmse}{shine}{cloister}{8.27}
+\resdef{rendrmse}{shine}{matheasy}{7.86}
+\resdef{rendrmse}{shine}{mathhard}{7.16}
+\resdef{rendrmse}{shine}{quadeasy}{6.73}
+\resdef{rendrmse}{shine}{quadmid}{7.12}
+\resdef{rendrmse}{shine}{quadhard}{7.38}
+\resdef{rendrmse}{shine}{canteenday}{6.38}
+\resdef{rendrmse}{shine}{canteennight}{6.30}
+\resdef{rendrmse}{shine}{gardenday}{7.07}
+\resdef{rendrmse}{shine}{gardennight}{6.97}
+
+% 4dNDF
+\resdef{rendrmse}{fourdndf}{cloister}{7.17}
+\resdef{rendrmse}{fourdndf}{matheasy}{6.28}
+\resdef{rendrmse}{fourdndf}{mathhard}{\resfail}
+\resdef{rendrmse}{fourdndf}{quadeasy}{6.73}
+\resdef{rendrmse}{fourdndf}{quadmid}{6.42}
+\resdef{rendrmse}{fourdndf}{quadhard}{6.34}
+\resdef{rendrmse}{fourdndf}{canteenday}{5.08}
+\resdef{rendrmse}{fourdndf}{canteennight}{5.06}
+\resdef{rendrmse}{fourdndf}{gardenday}{5.90}
+\resdef{rendrmse}{fourdndf}{gardennight}{6.29}
+
+% NeLD-BA (Ours)
+\resdef{rendrmse}{ours}{cloister}{8.73}
+\resdef{rendrmse}{ours}{matheasy}{7.90}
+\resdef{rendrmse}{ours}{mathhard}{8.60}
+\resdef{rendrmse}{ours}{quadeasy}{5.85}
+\resdef{rendrmse}{ours}{quadmid}{6.27}
+\resdef{rendrmse}{ours}{quadhard}{7.91}
+\resdef{rendrmse}{ours}{canteenday}{6.16}
+\resdef{rendrmse}{ours}{canteennight}{6.24}
+\resdef{rendrmse}{ours}{gardenday}{5.53}
+\resdef{rendrmse}{ours}{gardennight}{5.51}
+
+
+% ----------------------------------------------------------------------
+% Absolute Trajectory Error, mean [m]  (Table III)
+% ----------------------------------------------------------------------
+% FAST-LIO2 (initial)
+\resdef{ate}{fastlio2}{canteenday}{0.070}
+\resdef{ate}{fastlio2}{canteennight}{0.078}
+\resdef{ate}{fastlio2}{gardenday}{0.073}
+\resdef{ate}{fastlio2}{gardennight}{0.080}
+
+% SGHR
+\resdef{ate}{sghr}{canteenday}{4.025}
+\resdef{ate}{sghr}{canteennight}{3.781}
+\resdef{ate}{sghr}{gardenday}{3.663}
+\resdef{ate}{sghr}{gardennight}{\resfail}
+
+% GeoTrans
+\resdef{ate}{geotrans}{canteenday}{0.997}
+\resdef{ate}{geotrans}{canteennight}{1.676}
+\resdef{ate}{geotrans}{gardenday}{0.280}
+\resdef{ate}{geotrans}{gardennight}{0.405}
+
+% HBA
+\resdef{ate}{hba}{canteenday}{0.082}
+\resdef{ate}{hba}{canteennight}{0.085}
+\resdef{ate}{hba}{gardenday}{0.118}
+\resdef{ate}{hba}{gardennight}{0.126}
+
+% BALM
+\resdef{ate}{balm}{canteenday}{0.062}
+\resdef{ate}{balm}{canteennight}{0.066}
+\resdef{ate}{balm}{gardenday}{0.037}
+\resdef{ate}{balm}{gardennight}{0.037}
+
+% NeLD-BA (Ours)
+\resdef{ate}{ours}{canteenday}{0.053}
+\resdef{ate}{ours}{canteennight}{0.061}
+\resdef{ate}{ours}{gardenday}{0.043}
+\resdef{ate}{ours}{gardennight}{0.043}
