@@ -137,7 +137,7 @@ In this section, experiments were conducted to compare our method against state-
       \small Ground Truth Map &
       \\ 
   \end{tabular}
-  \caption{\textbf{Qualitative Results for Rendered Maps of Newer College (NC) and FusionPortable (FP) Sequences.}}
+  \caption{\textbf{Qualitative Results for Rendered Maps of Newer College (NC) and FusionPortable (FP) Sequences.} The color bar on the right shows the L2 distance error of the points with respect to the ground truth map.}
   \label{fig:rendered_map}
 \end{figure*}
 \begin{figure}
@@ -441,10 +441,14 @@ We also evaluate the optimized pose with trajectory ATE, and show that our metho
 			\res{rawcd}{ablnosurrogate}{mathhard} &      % mathhard
 			\res{rawcd}{ablnosurrogate}{quadhard} &      % quadhard
 			\res{rawcd}{ablnosurrogate}{canteenday} \\      % canteenday
-		\makecell[l]{Ours w/ NeRF Hier. \\ Sampling~\cite{mildenhall2020nerfOG}} & 
+		\makecell[l]{Ours w/ NeRF \\ Sampling~\cite{mildenhall2020nerfOG}} & 
 			\res{rawcd}{ablnerfhier}{mathhard} &      % mathhard
 			\res{rawcd}{ablnerfhier}{quadhard} &      % quadhard
 			\res{rawcd}{ablnerfhier}{canteenday} \\      % canteenday
+		\makecell[l]{Ours w/ Hashgrid} & 
+			\res{rawcd}{ablhash}{mathhard} &      % mathhard
+			\res{rawcd}{ablhash}{quadhard} &      % quadhard
+			\res{rawcd}{ablhash}{canteenday} \\      % canteenday
 		NeLD-BA (Ours) & 
 			\textbf{\res{rawcd}{ours}{mathhard}} &      % mathhard
 			\textbf{\res{rawcd}{ours}{quadhard}} &      % quadhard
@@ -467,12 +471,12 @@ We also evaluate the optimized pose with trajectory ATE, and show that our metho
     \centering
     \includegraphics[width=\linewidth]{images/ablation_study/quad_hard_ablation_ours_sampling.png}
   \end{subfigure}
-  \caption{\textbf{Ablation Study Qualitative Results.} NeRF's~\cite{mildenhall2020nerfOG} sampling method results in an outlier frame (left) while our method successfully registered the outlier frame (right).}
+  \caption{\textbf{Ablation Study Qualitative Results on Raw Maps.} NeRF's~\cite{mildenhall2020nerfOG} sampling method results in an outlier frame (left) while our method successfully registered the outlier frame (right).}
   \label{fig:ablation_qualitative_result}
   \vspace{-20pt}
 \end{figure}
 \subsection{Ablation Study}
-An ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}.
+An ablation study was conducted across three challenging sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and hierarchical sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our sampling method is able to eliminate outlier frames in registration compared to using NeRF's sampling method, evident in Figure~\ref{fig:ablation_qualitative_result}. A hashgrid encoding also improves the initial poses, though less than our full model, making it a promising direction for future investigation.
 
 \subsection{Limitations}
 While our algorithm has demonstrated superior capabilities in mapping and BA for scenes, large-scale sequences might be challenging, leading to significant under-utilization of the NeRF model's representational capability. This is due to the need to normalize point clouds within a $[-1,1]^3$ cube. Furthermore, our algorithm faces a challenge common to NeRFs: it requires relatively long training times.
