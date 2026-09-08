@@ -39,7 +39,7 @@ where $D$ is the measured range from LiDAR sensors, and each $\mathbf{p}_s$ is p
 	\caption{\textbf{Comparison of RGB NeRF-BA and LiDAR NeRF-BA in Volume Sampling along Depth/Range.}
 		(a) In RGB NeRF-BA, depth is only \textit{implicitly} constrained via colors and multi-view geometry (orange rays), thus volume samples are loosely constrained. In contrast, LiDAR provides range measurements which require \textit{explicit} volume sampling to constrain. 
 		(b) Sampling around the sharp transition of $\sigma(z)$ (pink region) is critical to produce a difference in the ray termination distribution $h(z)$ and $h(z+\epsilon)$ after alpha blending, which provides non-vanishing $\frac{\partial \hat{h}(z_i)}{\partial T(\mathbf{x}_j; \mathbf{p})}$ for pose optimization.
-		(c) NeRF \cite{mildenhall2020nerfOG} allocates fine samples \textit{around} coarse samples, which can miss the sharp transition of $\sigma(z)$ (highlighted pink region). We instead sample \textit{prior to} coarse samples, ensuring a dense sampling around the high-probability spike in $\sigma$, akin to a step function.}
+		(c) The centered fine sampling of NeRF \cite{mildenhall2020nerfOG} allocates fine samples \textit{around} coarse samples, which can miss the sharp transition of $\sigma(z)$ (highlighted pink region). Our pre-termination fine sampling instead places them \textit{prior to} coarse samples, ensuring a dense sampling around the high-probability spike in $\sigma$, akin to a step function.}
 	\label{fig:rgb_nerf_ba_vs_lidar_nerf_ba}
 \end{figure*}
 
@@ -59,7 +59,7 @@ This motivates us to consider the gradient of the estimated range $\hat{D}$ with
 
 We have found that the density of volume sampling, i.e., the number of samples per unit length along the ray, is essential for ensuring the $\frac{\partial \hat{h}(z_i)}{\partial T(\mathbf{x}_j; \mathbf{p})}$ terms do not vanish, as illustrated in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b). We address this through two modifications to volume sampling. 
 
-First, note that the vanilla hierarchical sampling strategy~\cite{mildenhall2020nerfOG} is sub-optimal for providing gradients for optimising $\mathbf{p}$. In the vanilla approach, fine samples were placed in a bin \textit{around} coarse samples, guided by weights derived from the coarse termination distribution, as shown in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). Notably, the sum in equation \ref{eq:range_gradient} is typically dominated by the first sample after the $\sigma$ spike, and samples after it contribute little to the sum due to alpha blending. Thus, we propose to place fine samples at volumes \textit{before} coarse samples, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). This fully utilizes the fine samples and significantly eliminates the estimated range ambiguity, as shown in Figure~\ref{fig:ray_termination_dist_comparison} with an actual LiDAR ray. 
+First, note that the centered fine sampling strategy of NeRF~\cite{mildenhall2020nerfOG} is sub-optimal for providing gradients for optimising $\mathbf{p}$. In centered fine sampling, fine samples are placed in a bin \textit{around} coarse samples, guided by weights derived from the coarse termination distribution, as shown in Figure \ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). Notably, the sum in equation \ref{eq:range_gradient} is typically dominated by the first sample after the $\sigma$ spike, and samples after it contribute little to the sum due to alpha blending. Thus, we propose \textit{pre-termination fine sampling}, which places fine samples at volumes \textit{before} coarse samples, as shown in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(c). This fully utilizes the fine samples and significantly eliminates the estimated range ambiguity, as shown in Figure~\ref{fig:ray_termination_dist_comparison} with an actual LiDAR ray. 
 
 Second, we notice that LiDAR rays often travel tens of meters into empty space, leading to sparse volume sampling. We therefore bound each ray's sampling interval to the normalized cube $C = [-1,1]^3$. Specifically, we first find the intersections of each ray with the cube $C$ using the AABB slab method~\cite{williams2005raybox}, which gives the near intersection range $c_n$ and far intersection range $c_f$. We then clamp $c_n$ and $c_f$ with chosen lower and upper bounds, $z_{low}$ and $z_{up}$, to get the sampling interval $[z_n, z_f]$ for the ray:
 
@@ -72,7 +72,7 @@ with a fallback to $[z_n, z_f] = [z_\text{low}, z_\text{up}]$ when the ray does 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.47\textwidth]{images/ray_term_dist_comparison_3.png}
-	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray in canteen\_day sequence} We illustrate the idea in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b) with an actual LiDAR ray. Our sampling method better approximates the baseline distribution constructed with 8192 uniform samples when shifted ($\epsilon=0.01$), which is critical for providing accurate gradients in LiDAR NeRF-BA.}
+	\caption{\textbf{Ray Termination Distributions of a LiDAR Ray in canteen\_day sequence} We illustrate the idea in Figure~\ref{fig:rgb_nerf_ba_vs_lidar_nerf_ba}(b) with an actual LiDAR ray. Our pre-termination fine sampling better approximates the baseline distribution constructed with 8192 uniform samples when shifted ($\epsilon=0.01$), which is critical for providing accurate gradients in LiDAR NeRF-BA.}
 	\label{fig:ray_termination_dist_comparison}
 	\vspace{-15pt}
 \end{figure}
@@ -183,7 +183,7 @@ Our final loss function $\mathcal{L}$ is:
 where superscripts $c$ and $f$ denote loss functions for coarse and fine estimations, and $\lambda$s are hyperparameters to be tuned.
 
 \subsection{Mapping}
-A rendered 3D map can be built by casting rays from the optimized sensor poses with the original ray directions in LiDAR frames. Using the same hierarchical sampling strategy mentioned above, the termination distances $z_\text{map}$ of rays are determined to be at the position of the highest termination probability per unit length:
+A rendered 3D map can be built by casting rays from the optimized sensor poses with the original ray directions in LiDAR frames. Using the same pre-termination fine sampling strategy described above, the termination distances $z_\text{map}$ of rays are determined to be at the position of the highest termination probability per unit length:
 \begin{align}
 	\label{eq:mapping_with_termination_density}
 	i^* = \arg\max_{i} \left( \frac{\hat{h}(z_i)}{\delta_i} \right),
