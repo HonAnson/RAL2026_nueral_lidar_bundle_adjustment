@@ -4,6 +4,7 @@ images/
 archive/
 *.pdf
 *.gz
+*.zip
 
 
 # LaTeX build files
