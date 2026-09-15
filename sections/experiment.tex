@@ -56,11 +56,11 @@
 		NeLD-BA (Ours) &
 			\res{rawcd}{ours}{cloister} &      % cloister
 			\underline{\res{rawcd}{ours}{matheasy}} &      % matheasy
-			\textbf{\res{rawcd}{ours}{mathhard}} &      % mathhard
+			\textbf{\rev{\res{rawcd}{ours}{mathhard}}} &      % mathhard
 			\textbf{\res{rawcd}{ours}{quadeasy}} &      % quadeasy
 			\textbf{\res{rawcd}{ours}{quadmid}} &      % quadmid
-			\textbf{\res{rawcd}{ours}{quadhard}} &      % quadhard
-			\textbf{\res{rawcd}{ours}{canteenday}} &      % canteenday
+			\textbf{\rev{\res{rawcd}{ours}{quadhard}}} &      % quadhard
+			\textbf{\rev{\res{rawcd}{ours}{canteenday}}} &      % canteenday
 			\textbf{\res{rawcd}{ours}{canteennight}} &      % canteennight
 			\textbf{\res{rawcd}{ours}{gardenday}} &      % gardenday
 			\textbf{\res{rawcd}{ours}{gardennight}} \\      % gardennight
@@ -86,7 +86,7 @@
 \end{table*}
 
 \section{Experimental Results}
-In this section, experiments were conducted to compare our method against state-of-the-art algorithms on mapping and trajectory performance. An ablation study is then presented.
+In this section, experiments were conducted to compare our method against state-of-the-art algorithms on mapping and trajectory performance. \rev{An ablation study is then presented}.
 
 \subsection{Experiment Setup}
 
@@ -137,24 +137,24 @@ In this section, experiments were conducted to compare our method against state-
       \small Ground Truth Map &
       \\ 
   \end{tabular}
-  \caption{\textbf{Qualitative Results for Rendered Maps of Newer College (NC) and FusionPortable (FP) Sequences.} The color bar on the right shows the L2 distance error of the points with respect to the ground truth map.}
+  \caption{\textbf{Qualitative Results for Rendered Maps of Newer College (NC) and FusionPortable (FP) Sequences.} \rev{The color bar on the right shows the L2 distance error of the points with respect to the ground truth map.}}
   \label{fig:rendered_map}
 \end{figure*}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.48\textwidth]{images/garden_day_error_hist.png}
-	\caption{\textbf{Error Histogram on Raw Map.} From the error distribution of garden\_day raw map points, it can be seen that our method results in fewer outlier points than BALM.}
+	\caption{\textbf{Error Histogram on Raw Map.} From the error distribution of garden\_day raw map points, it can be seen that our method \rev{results} in \rev{fewer} outlier points \rev{than} BALM.}
 	\label{fig:error_histogram}
 	\vspace{-15pt}
 \end{figure}
 
 \paragraph{Comparison Algorithms}
-We generated raw point cloud maps by registering scans with estimated poses and compared them against the ground truth map to evaluate the poses from HBA~\cite{liu2022HBA}, BALM~\cite{liu2021balm} and our method. The related work GeoNLF~\cite{xue2024geonlf} was not compared due to the lack of support for open-source implementation on the two datasets used. For HBA, BALM and our approach, the same input frames (sampled every 3 seconds) and initial pose estimation from FAST-LIO2 were used. Trajectory evaluation results are provided for HBA, BALM and two deep learning methods, GeoTrans~\cite{qin2023geotrans} and SGHR~\cite{wang2023sghr}. Both GeoTrans and SGHR were evaluated with their official pre-trained models.
+We \rev{generated} raw point cloud maps by registering scans with estimated poses and compared them against the ground truth map to evaluate the poses from HBA~\cite{liu2022HBA}, BALM~\cite{liu2021balm} and our method. The related work GeoNLF~\cite{xue2024geonlf} was not compared due to the lack of support for open-source implementation on the two \rev{datasets used}. For HBA, BALM and our approach, the same input frames (sampled every 3 seconds) and initial pose estimation from FAST-LIO2 were used. Trajectory evaluation results are provided for HBA, BALM and two deep learning methods, GeoTrans~\cite{qin2023geotrans} and SGHR~\cite{wang2023sghr}. Both GeoTrans and SGHR were evaluated with their official pre-trained models.
 
-We also generated a rendered map from the trained NeRF model, and conducted comparisons against three state-of-the-art LiDAR mapping algorithms with implicit scene representations, including SHINE-Mapping~\cite{zhong2023shinemapping}, PIN-SLAM~\cite{pan2024pinslam}, and 4dNDF~\cite{zhong20244dNDF}. For SHINE-Mapping, we followed the official configuration guidelines to set the frame rate with FAST-LIO2 poses provided as input. For PIN-SLAM, we employed the default configuration for the Newer College dataset, while relying on its internal SLAM to generate poses. For 4dNDF, the same LiDAR scans and FAST-LIO2 poses as provided to our method were used.
+We also generated a rendered map from the trained NeRF model, and conducted comparisons against three state-of-the-art LiDAR mapping algorithms with implicit scene representations\rev{, including} SHINE-Mapping~\cite{zhong2023shinemapping}, PIN-SLAM~\cite{pan2024pinslam}, and 4dNDF~\cite{zhong20244dNDF}. For SHINE-Mapping, we followed the official configuration guidelines to set the frame rate with FAST-LIO2 poses provided as input. For PIN-SLAM, we employed the default configuration for the Newer College dataset, while relying on its internal SLAM to generate poses. For 4dNDF, the same LiDAR scans and FAST-LIO2 poses as provided to our method were used.
 
 \paragraph{Evaluation Metrics}
-To quantitatively assess map quality, we employed the L1-Chamfer distance (L1-CD), inlier Root Mean Square Error (RMSE), and the F1 score with a 20 cm threshold when evaluating NeRF-rendered maps against the corresponding ground truth reconstructions. For raw LiDAR-based maps, the L1-Chamfer distance with a 1 m threshold was reported to capture outlier points. All mapping metrics were computed using the FusionPortable~\cite{wei2024fusionportablev2} evaluation framework. For trajectory accuracy, we evaluated the Absolute Trajectory Error (ATE) against the ground truth trajectories. ATE was computed with EVO~\cite{grupp2017evo}, after applying a rigid SE(3) alignment to remove differences due to coordinate frame initialization. This combination of metrics allows us to jointly evaluate both the structural fidelity of the reconstructed environment and the accuracy of the estimated trajectories.
+To quantitatively assess map quality, we employed the L1-Chamfer distance (L1-CD), inlier Root Mean Square Error (RMSE), and the F1 score with \rev{a} 20 cm threshold when evaluating NeRF-rendered maps against the corresponding ground truth reconstructions. For raw LiDAR-based maps, the L1-Chamfer distance with \rev{a} 1 \rev{m} threshold was reported to \rev{capture} outlier points. All mapping metrics were computed using the FusionPortable~\cite{wei2024fusionportablev2} evaluation framework. For trajectory accuracy, we evaluated the Absolute Trajectory Error (ATE) against the ground truth trajectories. ATE was computed with EVO~\cite{grupp2017evo}, after applying a rigid SE(3) alignment to remove differences due to coordinate frame initialization. This combination of metrics allows us to jointly evaluate both the structural fidelity of the reconstructed environment and the accuracy of the estimated trajectories.
 
 \paragraph{Datasets and Data Processing}
 The Newer College~\cite{Ramezani2020newercollege} and FusionPortable~\cite{wei2024fusionportablev2} datasets were used for experiments, since they provide both ground truth (GT) 3D maps from survey-grade LiDAR scanners and ground truth trajectory poses. The FAST-LIO2~\cite{xu2021fastlio2} algorithm was used as an off-the-shelf LiDAR odometry to provide the initial pose estimation, although the proposed method is flexible to work with other algorithms that can estimate LiDAR poses. LiDAR scans and their corresponding FAST-LIO2 poses were sampled every 3 seconds, and only points within a 0.5–80 m sensing range were retained for training. 
@@ -162,11 +162,11 @@ The Newer College~\cite{Ramezani2020newercollege} and FusionPortable~\cite{wei20
 
 \subsection{Reconstruction and Mapping Evaluation}\label{sec:pcd_plot_map}
 \paragraph{Raw Point Cloud Map Evaluation}
-Our method produces a more accurate pose refinement, evident from the substantial reduction in the L1-Chamfer distance of the raw maps from our method compared to those from HBA and BALM, as shown in Table~\ref{tab:pcd_plotting_cd-eval}, particularly on challenging sequences such as quad\_hard and math\_hard. In contrast, HBA often fails to register point clouds effectively, while BALM fails to handle outlier frames, which is also evident in Figure~\ref{fig:error_histogram}. Interestingly, raw maps generated using ground truth poses yield relatively higher L1-Chamfer distances for several Newer College sequences, suggesting that the provided ground truth poses are not perfectly accurate and may introduce additional misalignments as reported in~\cite{zhong20244dNDF}. Qualitative results are shown in Figure~\ref{fig:raw_map_results}. Across sequences with both favorable initializations (e.g., quad\_easy) and challenging ones with poor initial poses (e.g., quad\_hard), our method consistently produces more coherent and structurally faithful raw maps compared to HBA and BALM.
+Our method \rev{produces} a more accurate pose refinement, evident from the substantial reduction in the L1-Chamfer distance of the raw maps \rev{from} our method compared to those \rev{from} HBA and BALM, as shown in Table~\ref{tab:pcd_plotting_cd-eval}, \rev{particularly} on challenging sequences such as quad\_hard and math\_hard. In contrast, HBA often fails to register point clouds effectively, while BALM \rev{fails} to handle outlier frames, which is also evident in Figure~\ref{fig:error_histogram}. Interestingly, raw maps generated using ground truth poses \rev{yield} relatively higher L1-Chamfer distances for several Newer College sequences, suggesting that the provided ground truth poses are not perfectly accurate and may introduce additional misalignments as reported in~\cite{zhong20244dNDF}. Qualitative results are shown in Figure~\ref{fig:raw_map_results}. Across sequences with both favorable initializations (e.g., quad\_easy) and challenging ones with poor initial poses (e.g., quad\_hard), our method consistently produces more coherent and structurally faithful raw maps compared to HBA and BALM.
 
 
 \paragraph{Rendered Map Evaluation}
-Benefiting from the pose refinement capabilities, our method is able to produce a more accurate rendered map from NeRF against state-of-the-art mapping algorithms, which is particularly evident in the quad\_hard sequence in Figure~\ref{fig:rendered_map}. Table~\ref{tab:rendered_map} shows the quantitative results for rendered maps. Our algorithm outperforms SHINE-Mapping, PIN-SLAM and 4dNDF on F1 score and L1-CD, while achieving comparable inlier RMSE. For sequences with better initial poses such as quad\_easy, our rendering method is able to produce a cleaner map which reduces outliers, while others over-reconstruct the map, which lowers their F1 score and is also evident in the reduction of high-error points shown in Figure~\ref{fig:rendered_map}.
+\rev{Benefiting} from the pose refinement capabilities, our method is able to produce a more accurate rendered map from NeRF against state-of-the-art mapping algorithms, which is particularly evident in the quad\_hard sequence in Figure~\ref{fig:rendered_map}. Table~\ref{tab:rendered_map} shows the \rev{quantitative} results for rendered maps. Our algorithm outperforms SHINE-Mapping, PIN-SLAM and 4dNDF on F1 score and L1-CD, while achieving \rev{comparable} inlier RMSE. For sequences with better initial poses such as quad\_easy, our rendering method is able to produce a cleaner map which reduces outliers\rev{, while others over-reconstruct the map,} which lowers their F1 score \rev{and} is also evident in the \rev{reduction} of high-error points shown in Figure~\ref{fig:rendered_map}.
 
 % --- Rendered map quantitavie Result
 \begin{table*}
@@ -403,11 +403,11 @@ Benefiting from the pose refinement capabilities, our method is able to produce 
 		\bottomrule
 	\end{tabular}
 	{\captionsetup{justification=raggedright,singlelinecheck=false}
- 	\caption*{\small The best results are highlighted in \textbf{bold}, the second-best results are \underline{underlined}.}}
+ 	\caption*{\small The best results are highlighted in \textbf{bold}\rev{,} the second-best results are \underline{underlined}.}}
 	\vspace{-20pt}
 \end{table}
 
-We also evaluate the optimized pose with trajectory ATE, and show that our method has substantially improved the initial poses from FAST-LIO2. The quantitative and qualitative results are shown in Table~\ref{tab:ate-eval} and Figure~\ref{fig:trajectory_result}. Both deep learning approaches have underperformed as the pre-trained models struggle to generalize to outdoor scenes. In contrast, BALM and our method have achieved a near ground truth trajectory for FusionPortable sequences. Due to the potentially imperfect ground truth pose for Newer College sequences as discussed in Section~\ref{sec:pcd_plot_map}, trajectory evaluation for Newer College sequences is not provided.
+We also evaluate the optimized pose with trajectory ATE, and show that our method \rev{has substantially improved} the initial poses from FAST-LIO2. The quantitative and qualitative results are shown in Table~\ref{tab:ate-eval} and Figure~\ref{fig:trajectory_result}. Both deep learning approaches have underperformed as the pre-trained models struggle to generalize to outdoor scenes. \rev{In contrast,} BALM and our method \rev{have} achieved a near ground truth trajectory for FusionPortable sequences. Due to the potentially imperfect ground truth pose for Newer College sequences as discussed in Section~\ref{sec:pcd_plot_map}, trajectory evaluation for Newer College sequences is not provided.
 
 \begin{table}
 	\caption{Ablation Study on L1-Chamfer Distance of Raw Point Cloud Maps [cm]}
@@ -423,11 +423,11 @@ We also evaluate the optimized pose with trajectory ATE, and show that our metho
 			\makecell{quad\_hard} & 
 			\makecell{canteen\_day}\\
 		\midrule
-		\makecell[l]{w/o Fine Sampling \\ w/o Cube Bound} & 
+		\makecell[l]{w/o \rev{Fine} Sampling \\ w/o Cube Bound} & 
 			\res{rawcd}{ablnohiernocube}{mathhard} &      % mathhard
 			\res{rawcd}{ablnohiernocube}{quadhard} &      % quadhard
 			\res{rawcd}{ablnohiernocube}{canteenday} \\      % canteenday
-		w/o Fine Sampling & 
+		w/o \rev{Fine} Sampling & 
 			\res{rawcd}{ablnohier}{mathhard} &      % mathhard
 			\res{rawcd}{ablnohier}{quadhard} &      % quadhard
 			\res{rawcd}{ablnohier}{canteenday} \\      % canteenday
@@ -439,14 +439,14 @@ We also evaluate the optimized pose with trajectory ATE, and show that our metho
 			\res{rawcd}{ablnosurrogate}{mathhard} &      % mathhard
 			\res{rawcd}{ablnosurrogate}{quadhard} &      % quadhard
 			\res{rawcd}{ablnosurrogate}{canteenday} \\      % canteenday
-		\makecell[l]{Ours w/ Centered Fine \\ Sampling~\cite{mildenhall2020nerfOG}} & 
+		\makecell[l]{Ours w/ \rev{Centered Fine} \\ Sampling~\cite{mildenhall2020nerfOG}} & 
 			\res{rawcd}{ablnerfhier}{mathhard} &      % mathhard
 			\res{rawcd}{ablnerfhier}{quadhard} &      % quadhard
 			\res{rawcd}{ablnerfhier}{canteenday} \\      % canteenday
-		\makecell[l]{Ours w/ Hash Grid} & 
-			\res{rawcd}{ablhash}{mathhard} &      % mathhard
-			\res{rawcd}{ablhash}{quadhard} &      % quadhard
-			\res{rawcd}{ablhash}{canteenday} \\      % canteenday
+		\makecell[l]{\rev{Ours w/ Hash Grid}} & 
+			\rev{\res{rawcd}{ablhash}{mathhard}} &      % mathhard
+			\rev{\res{rawcd}{ablhash}{quadhard}} &      % quadhard
+			\rev{\res{rawcd}{ablhash}{canteenday}} \\      % canteenday
 		NeLD-BA (Ours) & 
 			\textbf{\res{rawcd}{ablours}{mathhard}} &      % mathhard
 			\textbf{\res{rawcd}{ablours}{quadhard}} &      % quadhard
@@ -469,12 +469,12 @@ We also evaluate the optimized pose with trajectory ATE, and show that our metho
     \centering
     \includegraphics[width=\linewidth]{images/ablation_study/quad_hard_ablation_ours_sampling.png}
   \end{subfigure}
-  \caption{\textbf{Ablation Study Qualitative Results on Raw Maps.} Centered fine sampling~\cite{mildenhall2020nerfOG} results in an outlier frame (left), while our pre-termination fine sampling successfully registered the outlier frame (right).}
+  \caption{\textbf{Ablation Study Qualitative Results \rev{on Raw Maps}.} \rev{Centered fine sampling}~\cite{mildenhall2020nerfOG} \rev{results} in an outlier frame (left)\rev{,} while our \rev{pre-termination fine sampling} successfully registered the outlier frame (right).}
   \label{fig:ablation_qualitative_result}
   \vspace{-20pt}
 \end{figure}
 \subsection{Ablation Study}
-An ablation study was conducted across three sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map Chamfer distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and fine sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our pre-termination fine sampling is able to eliminate outlier frames in registration compared to NeRF's centered fine sampling, evident in Figure~\ref{fig:ablation_qualitative_result}. Interestingly, using a hashgrid encoding also performed comparable with our method, which is a promising direction for future investigation.
+\rev{An ablation} study was conducted across three sequences to validate our algorithm. We quantitatively compare the ablation results by evaluating the raw point cloud map \rev{Chamfer} distance, as shown in Table~\ref{tab:ablation_study}. When the volume samples are not bounded within the $[-1,1]^3$ cube and \rev{fine} sampling is not used, the pose refinement performance significantly drops. It is also evident that the surrogate gradient and termination loss are crucial for achieving high-quality BA. Furthermore, our \rev{pre-termination fine sampling} is able to eliminate outlier frames in registration compared to NeRF's \rev{centered fine sampling}, evident in Figure~\ref{fig:ablation_qualitative_result}. \rev{Interestingly, using a hashgrid encoding also performed comparable with our method, which is a promising direction for future investigation.}
 
 \subsection{Limitations}
-Large-scale sequences might be challenging for our method due to the need to normalize point clouds within a $[-1,1]^3$ cube. Furthermore, our algorithm faces a challenge common to NeRFs that it requires relatively long training times.
+\rev{Large-scale} sequences might be challenging \rev{for our method} due to the need to normalize point clouds within a $[-1,1]^3$ cube. Furthermore, our algorithm faces \rev{a challenge common to} NeRFs that it requires relatively long training times.

@@ -62,6 +62,18 @@
 % All experimental numbers live in one place -- see sections/results.tex
 \input{sections/results.tex}
 
+% Revision markup (RA-L: changes w.r.t. the initial submission shown in blue).
+% Changed/new text is wrapped in \rev{...} in the section files.
+%   \revisionmarkstrue  -> changes typeset in blue
+%   \revisionmarksfalse -> clean paper, \rev{...} is a no-op
+\newif\ifrevisionmarks
+\revisionmarkstrue
+\ifrevisionmarks
+  \newcommand{\rev}[1]{{\protect\color{blue}#1}}
+\else
+  \newcommand{\rev}[1]{#1}
+\fi
+
 % \usepackage{hyperref}       % hyperlinks
 % \hypersetup{
 % 	colorlinks=true,
