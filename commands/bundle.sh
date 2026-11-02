@@ -40,7 +40,7 @@ FILES=()
 # Always-included sources: main tex, sections, bibliography, class/style files.
 FILES+=("$TEXFILE")
 while IFS= read -r f; do FILES+=("$f"); done < <(find sections -type f -name '*.tex' 2>/dev/null | sort)
-while IFS= read -r f; do FILES+=("$f"); done < <(find . -maxdepth 1 -type f \( -name '*.bib' -o -name '*.cls' -o -name '*.sty' -o -name '*.bst' \) -printf '%P\n' | sort)
+while IFS= read -r f; do FILES+=("$f"); done < <(find . -maxdepth 1 -type f \( -name '*.bib' -o -name '*.cls' -o -name '*.sty' -o -name '*.bst' \) | sed 's#^\./##' | sort)
 [[ -f "${BASE}.bbl" ]] && FILES+=("${BASE}.bbl")
 
 # Images: prefer the exact set the last build read (recorded in the .fls).
