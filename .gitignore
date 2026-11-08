@@ -2,6 +2,7 @@
 root.pdf
 images/
 archive/
+template/
 *.pdf
 *.gz
 *.zip

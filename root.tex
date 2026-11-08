@@ -1,34 +1,14 @@
+\documentclass[letterpaper,journal,twoside]{IEEEtran}  % IEEE RA-L template (IEEE-LRA-latex-template/)
+\IEEEoverridecommandlockouts                   % allow \thanks in \author
 
-%2345678901234567890123456789012345678901234567890123456789012345678901234567890
-%        1         2         3         4         5         6         7         8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RA-L final-version metadata -- FILL IN THE ACTUAL DATES
+\newcommand{\datereceived}{June 23, 2026}   % original submission date
+\newcommand{\daterevised}{September 21, 2026}    % revised submission date
+\newcommand{\dateaccepted}{October 28, 2026}   % acceptance date
+\newcommand{\finalmonthyear}{NOVEMBER, 2026}  % month/year of final submission
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
-
-%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
-
-\IEEEoverridecommandlockouts                              % This command is only needed if 
-                                                          % you want to use the \thanks command
-
-\overrideIEEEmargins                                      % Needed to meet printer requirements.
-
-%In case you encounter the following error:
-%Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
-%Error 1000 An error occurred while parsing a contents stream. Unable to analyze the PDF file.
-%This is a known problem with pdfLaTeX conversion filter. The file cannot be opened with acrobat reader
-%Please use one of the alternatives below to circumvent this error by uncommenting one or the other
-%\pdfobjcompresslevel=0
-%\pdfminorversion=4
-
-% See the \addtolength command later in the file to balance the column lengths
-% on the last page of the document
-
-% The following packages can be found on http:\\www.ctan.org
-%\usepackage{graphics} % for pdf, bitmapped graphics files
-%\usepackage{epsfig} % for postscript graphics files
-%\usepackage{mathptmx} % assumes new font selection scheme installed
-%\usepackage{times} % assumes new font selection scheme installed
-%\usepackage{amsmath} % assumes amsmath package installed
-%\usepackage{amssymb}  % assumes amsmath package installed
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
@@ -71,24 +51,32 @@
 % 	pdfborder={0 0 0}
 % }
 
-\title{\LARGE \bf
-Neural LiDAR Bundle Adjustment
-}
+\title{Neural LiDAR Bundle Adjustment}
+
 \author{Chin Yung Anson Hon$^{1}$, Kaicheng Zhang$^{1}$, and Sen Wang$^{1}$% <-this % stops a space
-\thanks{\raggedright $^{1}$The authors are with Imperial College London, London, United Kingdom.
-        {\tt\small ch1223@ic.ac.uk; k.zhang23@alumni.imperial.ac.uk; sen.wang@imperial.ac.uk}}%
+\thanks{Manuscript received: \datereceived; Revised: \daterevised; Accepted: \dateaccepted.}%
+\thanks{This paper was recommended for publication by Editor Ayoung Kim upon evaluation of the Associate Editor and Reviewers' comments.}%
+\thanks{$^{1}$The authors are with Imperial College London, London, United Kingdom
+        (e-mail: ch1223@ic.ac.uk; k.zhang23@alumni.imperial.ac.uk; sen.wang@imperial.ac.uk).}%
+\thanks{Digital Object Identifier (DOI): see top of this page.}%
 }
+
+% Page headers: left = first page and even pages; right = odd pages from page 3
+\markboth{IEEE ROBOTICS AND AUTOMATION LETTERS. PREPRINT VERSION. ACCEPTED \finalmonthyear}%
+{Hon \MakeLowercase{\textit{et al.}}: Neural LiDAR Bundle Adjustment}
+
 \begin{document}
 
 \maketitle
-\thispagestyle{empty}
-\pagestyle{empty}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
     Recent research has achieved remarkable novel view rendering and scene reconstruction results with Neural Radiance Field (NeRF), including extensions to the LiDAR modality. Few studies have, however, explored the key design differences between RGB NeRFs and LiDAR NeRFs, particularly considering their underlying working principles. In this work, we provide both theoretical and empirical evidence suggesting that the density of volume sampling plays a significant role in LiDAR NeRF. Based on this finding, we propose a novel Neural LiDAR Bundle Adjustment (NeLD-BA) algorithm, which is tailored using efficient volume sampling of LiDAR rays for joint optimization of LiDAR map and poses. Extensive experiments are performed using the Newer College and FusionPortable datasets to demonstrate the proposed NeLD-BA's state-of-the-art performance in multi-view point cloud registration and 3D mapping. Our code is available at \url{https://github.com/SenseRoboticsLab/neld_ba}.
 \end{abstract}
+
+\begin{IEEEkeywords}
+Mapping, SLAM, range sensing.
+\end{IEEEkeywords}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{sections/introduction.tex}
 \input{sections/related_work.tex}
@@ -99,12 +87,7 @@ Neural LiDAR Bundle Adjustment
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,references.bib}
 
-\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
-                                  % on the last page of the document manually. It shortens
-                                  % the textheight of the last page by a suitable amount.
-                                  % This command does not take effect until the next page
-                                  % so it should come on the page before the last. Make
-                                  % sure that you do not shorten the textheight too much.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
