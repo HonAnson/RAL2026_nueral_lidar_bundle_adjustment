@@ -22,7 +22,10 @@
 #   JPEG_QUALITY=85   JPEG quality 1-100 (lower = smaller, more artefacts)
 #   MAX_PX=600        max longest side for opaque images; 0 disables resizing
 #   ALL_IMAGES=1      include the whole images/ folder instead of using the .fls
-#   VERIFY=1          compile the staged bundle with latexmk to check it still builds
+#   VERIFY=0          skip compiling the staged bundle (default 1: compile it and
+#                     write ${BASE}_compressed_check.pdf from the bundle's contents)
+#   REBUILD=0         skip the up-front latexmk build of the repo (default 1), which
+#                     keeps the .bbl and .fls in sync with the current sources
 #
 # Image tool: uses `sips` (built into macOS); falls back to ImageMagick
 # (`magick` or `convert`) elsewhere.
@@ -89,13 +92,31 @@ to_jpeg() {     # $1 = src png, $2 = dst jpg
 
 fsize() { wc -c < "$1" | tr -d ' '; }
 
+# ---- rebuild so .bbl/.fls match the current sources ---------------------------
+FLS="${BASE}.fls"
+if [[ "${REBUILD:-1}" == "1" ]]; then
+    if command -v latexmk >/dev/null 2>&1; then
+        echo "==> rebuilding $TEXFILE so the bundle matches the current sources"
+        if ! latexmk -pdf -interaction=nonstopmode -halt-on-error "$TEXFILE" >/dev/null 2>&1; then
+            echo "error: $TEXFILE failed to compile; see ${BASE}.log" >&2
+            exit 1
+        fi
+    else
+        echo "warning: latexmk not found; bundling the existing .bbl/.fls, which may be stale" >&2
+    fi
+fi
+
 # ---- collect files (same rules as bundle.sh) ---------------------------------
 FILES=("$TEXFILE")
 while IFS= read -r f; do FILES+=("$f"); done < <(find sections -type f -name '*.tex' 2>/dev/null | sort)
-while IFS= read -r f; do FILES+=("$f"); done < <(find . -maxdepth 1 -type f \( -name '*.bib' -o -name '*.cls' -o -name '*.sty' -o -name '*.bst' \) | sed 's#^\./##' | sort)
+while IFS= read -r f; do FILES+=("$f"); done < <(find . -maxdepth 1 -type f \( -name '*.bib' -o -name '*.bst' \) | sed 's#^\./##' | sort)
+# Local .cls/.sty: only those the last build actually loaded (e.g. IEEEtran.cls,
+# not the leftover ieeeconf.cls); all of them if there is no .fls.
+while IFS= read -r f; do
+    if [[ ! -f "$FLS" ]] || grep -qE "^INPUT (\./)?${f//./\\.}\$" "$FLS"; then FILES+=("$f"); fi
+done < <(find . -maxdepth 1 -type f \( -name '*.cls' -o -name '*.sty' \) | sed 's#^\./##' | sort)
 [[ -f "${BASE}.bbl" ]] && FILES+=("${BASE}.bbl")
 
-FLS="${BASE}.fls"
 if [[ "${ALL_IMAGES:-0}" == "1" || ! -f "$FLS" ]]; then
     [[ -f "$FLS" ]] || echo "==> no $FLS found (run ./commands/compile.sh first to prune unused images); including all of images/"
     while IFS= read -r f; do FILES+=("$f"); done < <(find images -type f 2>/dev/null | sort)
@@ -161,7 +182,9 @@ fi
 echo "==> images: $(( BEFORE / 1024 )) KB -> $(( AFTER / 1024 )) KB (${#CONVERTED[@]} PNG -> JPEG)"
 
 # ---- optional build check ----------------------------------------------------
-if [[ "${VERIFY:-0}" == "1" ]]; then
+# Remove any previous check PDF so an old one can't be mistaken for this bundle.
+rm -f -- "${BASE}_compressed_check.pdf"
+if [[ "${VERIFY:-1}" == "1" ]]; then
     if command -v latexmk >/dev/null 2>&1; then
         echo "==> VERIFY=1: compiling staged bundle"
         VDIR="$(mktemp -d "${TMPDIR:-/tmp}/bundle_verify.XXXXXX")"
